@@ -113,11 +113,11 @@ class HiddenSlothImpl(
     }
 
     /**
-     * Authenticates the ciphertext stored in [storage] using the password [pw]. If the password
-     * does not unlock the storage, an [AEADBadTagException] exception is thrown.
+     * Authenticates the ciphertext stored in [storage] key stored in the secure element. If the
+     * storage blob does not authenticate, an [AEADBadTagException] is thrown.
      */
     @Throws(AEADBadTagException::class)
-    fun authenticate(storage: ReadableStorage, pw: String) {
+    fun authenticate(storage: ReadableStorage) {
         val hDems = KeyHandle(storage.get("hDems"))
         val seIv = storage.get("seIv")
 

@@ -124,7 +124,7 @@ class HiddenSloth internal constructor(
 
         try {
             if (authenticateStorage) {
-                impl.authenticate(namespacedStorage, pw)
+                impl.authenticate(namespacedStorage)
             }
             return impl.prepareCachedSecrets(namespacedStorage, pw)
         } catch (e: AEADBadTagException) {
