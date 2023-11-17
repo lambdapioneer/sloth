@@ -30,8 +30,9 @@ Finally, we present HiddenSloth, a deniable encryption scheme, leveraging Sloth 
 
 ## This repository
 
+[![Android](https://github.com/lambdapioneer/sloth/actions/workflows/android.yaml/badge.svg?branch=main)](https://github.com/lambdapioneer/sloth/actions/workflows/android.yaml)
 
-It is organized in the following folders:
+This repository is organized into the following folders:
 
 - [`android`](android/): The Android implementation of LongSloth and HiddenSloth.
 - [`evaluation`](evaluation/): The analysis scripts used to generate the plots and tables in the paper.
