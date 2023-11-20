@@ -1,9 +1,0 @@
-target 'SecureEnclaveBench' do
-  use_frameworks!
-
-  pod 'Argon2Swift'
-
-  target 'SecureEnclaveBenchTests' do
-    inherit! :search_paths
-  end
-end

@@ -1,0 +1,43 @@
+on:
+  push:
+    paths:
+      - "ios/**"
+      - ".github/workflows/ios.yaml"
+    branches: [ "main" ]
+
+name: iOS
+
+jobs:
+  build:
+    name: Synchronize libraries
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+
+      - name: Add secret key to runner
+        env:
+          SLOTH_IOS_KEY: ${{ secrets.SLOTH_IOS_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SLOTH_IOS_KEY" > ~/.ssh/id_ed25519
+          chmod 400 ~/.ssh/id_ed25519
+          wc ~/.ssh/id_ed25519
+
+      - name: Checkout remote
+        run: |
+          git config --global user.email "placeholder@example.com"
+          git config --global user.name "GitHub Action Sync Bot"
+          git clone git@github.com:lambdapioneer/sloth-ios.git target
+
+      - name: Replace contents
+        run: |
+          cd target
+          cp -rv ../ios/RainbowSloth/* .
+
+      - name: Pushy to remote
+        run: |
+          cd target
+          git add .
+          git diff-index --quiet HEAD || git commit -m "Automatic publish from github.com/lambdapioneer/sloth"
+          git push origin main

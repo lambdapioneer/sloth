@@ -1,0 +1,511 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		29AAF9C12B0B55A800E12423 /* SlothApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AAF9C02B0B55A800E12423 /* SlothApp.swift */; };
+		29AAF9C32B0B55A800E12423 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AAF9C22B0B55A800E12423 /* ContentView.swift */; };
+		29AAF9C52B0B55A900E12423 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 29AAF9C42B0B55A900E12423 /* Assets.xcassets */; };
+		29AAF9C82B0B55A900E12423 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 29AAF9C72B0B55A900E12423 /* Preview Assets.xcassets */; };
+		29AAF9EE2B0B5FA400E12423 /* RainbowSlothTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AAF9ED2B0B5FA400E12423 /* RainbowSlothTests.swift */; };
+		29AAF9F02B0B5FF700E12423 /* SecureEnclaveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AAF9EF2B0B5FF700E12423 /* SecureEnclaveTests.swift */; };
+		29AAF9F22B0B618300E12423 /* UIDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AAF9F12B0B618300E12423 /* UIDevice.swift */; };
+		29AAF9F52B0B61AC00E12423 /* RainbowSloth in Frameworks */ = {isa = PBXBuildFile; productRef = 29AAF9F42B0B61AC00E12423 /* RainbowSloth */; };
+		29AAF9F72B0B624200E12423 /* RainbowSloth in Frameworks */ = {isa = PBXBuildFile; productRef = 29AAF9F62B0B624200E12423 /* RainbowSloth */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		29AAF9CE2B0B55A900E12423 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29AAF9B52B0B55A800E12423 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 29AAF9BC2B0B55A800E12423;
+			remoteInfo = Sloth;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		29AAF9BD2B0B55A800E12423 /* Sloth.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sloth.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		29AAF9C02B0B55A800E12423 /* SlothApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlothApp.swift; sourceTree = "<group>"; };
+		29AAF9C22B0B55A800E12423 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		29AAF9C42B0B55A900E12423 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		29AAF9C72B0B55A900E12423 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		29AAF9CD2B0B55A900E12423 /* SlothTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SlothTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		29AAF9EA2B0B55F300E12423 /* RainbowSloth */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = RainbowSloth; path = ../../RainbowSloth; sourceTree = "<group>"; };
+		29AAF9ED2B0B5FA400E12423 /* RainbowSlothTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowSlothTests.swift; sourceTree = "<group>"; };
+		29AAF9EF2B0B5FF700E12423 /* SecureEnclaveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureEnclaveTests.swift; sourceTree = "<group>"; };
+		29AAF9F12B0B618300E12423 /* UIDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDevice.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		29AAF9BA2B0B55A800E12423 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29AAF9F52B0B61AC00E12423 /* RainbowSloth in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		29AAF9CA2B0B55A900E12423 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29AAF9F72B0B624200E12423 /* RainbowSloth in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		29AAF9B42B0B55A800E12423 = {
+			isa = PBXGroup;
+			children = (
+				29AAF9BF2B0B55A800E12423 /* Sloth */,
+				29AAF9D02B0B55A900E12423 /* SlothTests */,
+				29AAF9BE2B0B55A800E12423 /* Products */,
+				29AAF9F32B0B61AC00E12423 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		29AAF9BE2B0B55A800E12423 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				29AAF9BD2B0B55A800E12423 /* Sloth.app */,
+				29AAF9CD2B0B55A900E12423 /* SlothTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29AAF9BF2B0B55A800E12423 /* Sloth */ = {
+			isa = PBXGroup;
+			children = (
+				29AAF9EA2B0B55F300E12423 /* RainbowSloth */,
+				29AAF9C02B0B55A800E12423 /* SlothApp.swift */,
+				29AAF9C22B0B55A800E12423 /* ContentView.swift */,
+				29AAF9F12B0B618300E12423 /* UIDevice.swift */,
+				29AAF9C42B0B55A900E12423 /* Assets.xcassets */,
+				29AAF9C62B0B55A900E12423 /* Preview Content */,
+			);
+			path = Sloth;
+			sourceTree = "<group>";
+		};
+		29AAF9C62B0B55A900E12423 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				29AAF9C72B0B55A900E12423 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		29AAF9D02B0B55A900E12423 /* SlothTests */ = {
+			isa = PBXGroup;
+			children = (
+				29AAF9ED2B0B5FA400E12423 /* RainbowSlothTests.swift */,
+				29AAF9EF2B0B5FF700E12423 /* SecureEnclaveTests.swift */,
+			);
+			path = SlothTests;
+			sourceTree = "<group>";
+		};
+		29AAF9F32B0B61AC00E12423 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		29AAF9BC2B0B55A800E12423 /* Sloth */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 29AAF9E12B0B55A900E12423 /* Build configuration list for PBXNativeTarget "Sloth" */;
+			buildPhases = (
+				29AAF9B92B0B55A800E12423 /* Sources */,
+				29AAF9BA2B0B55A800E12423 /* Frameworks */,
+				29AAF9BB2B0B55A800E12423 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Sloth;
+			packageProductDependencies = (
+				29AAF9F42B0B61AC00E12423 /* RainbowSloth */,
+			);
+			productName = Sloth;
+			productReference = 29AAF9BD2B0B55A800E12423 /* Sloth.app */;
+			productType = "com.apple.product-type.application";
+		};
+		29AAF9CC2B0B55A900E12423 /* SlothTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 29AAF9E42B0B55A900E12423 /* Build configuration list for PBXNativeTarget "SlothTests" */;
+			buildPhases = (
+				29AAF9C92B0B55A900E12423 /* Sources */,
+				29AAF9CA2B0B55A900E12423 /* Frameworks */,
+				29AAF9CB2B0B55A900E12423 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				29AAF9CF2B0B55A900E12423 /* PBXTargetDependency */,
+			);
+			name = SlothTests;
+			packageProductDependencies = (
+				29AAF9F62B0B624200E12423 /* RainbowSloth */,
+			);
+			productName = SlothTests;
+			productReference = 29AAF9CD2B0B55A900E12423 /* SlothTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29AAF9B52B0B55A800E12423 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					29AAF9BC2B0B55A800E12423 = {
+						CreatedOnToolsVersion = 15.0.1;
+					};
+					29AAF9CC2B0B55A900E12423 = {
+						CreatedOnToolsVersion = 15.0.1;
+						TestTargetID = 29AAF9BC2B0B55A800E12423;
+					};
+				};
+			};
+			buildConfigurationList = 29AAF9B82B0B55A800E12423 /* Build configuration list for PBXProject "Sloth" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 29AAF9B42B0B55A800E12423;
+			productRefGroup = 29AAF9BE2B0B55A800E12423 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				29AAF9BC2B0B55A800E12423 /* Sloth */,
+				29AAF9CC2B0B55A900E12423 /* SlothTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		29AAF9BB2B0B55A800E12423 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29AAF9C82B0B55A900E12423 /* Preview Assets.xcassets in Resources */,
+				29AAF9C52B0B55A900E12423 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		29AAF9CB2B0B55A900E12423 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		29AAF9B92B0B55A800E12423 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29AAF9C32B0B55A800E12423 /* ContentView.swift in Sources */,
+				29AAF9F22B0B618300E12423 /* UIDevice.swift in Sources */,
+				29AAF9C12B0B55A800E12423 /* SlothApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		29AAF9C92B0B55A900E12423 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29AAF9EE2B0B5FA400E12423 /* RainbowSlothTests.swift in Sources */,
+				29AAF9F02B0B5FF700E12423 /* SecureEnclaveTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		29AAF9CF2B0B55A900E12423 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 29AAF9BC2B0B55A800E12423 /* Sloth */;
+			targetProxy = 29AAF9CE2B0B55A900E12423 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		29AAF9DF2B0B55A900E12423 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		29AAF9E02B0B55A900E12423 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		29AAF9E22B0B55A900E12423 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Sloth/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lambdapioneer.Sloth;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		29AAF9E32B0B55A900E12423 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Sloth/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lambdapioneer.Sloth;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		29AAF9E52B0B55A900E12423 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lambdapioneer.SlothTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Sloth.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Sloth";
+			};
+			name = Debug;
+		};
+		29AAF9E62B0B55A900E12423 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lambdapioneer.SlothTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Sloth.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Sloth";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		29AAF9B82B0B55A800E12423 /* Build configuration list for PBXProject "Sloth" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				29AAF9DF2B0B55A900E12423 /* Debug */,
+				29AAF9E02B0B55A900E12423 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		29AAF9E12B0B55A900E12423 /* Build configuration list for PBXNativeTarget "Sloth" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				29AAF9E22B0B55A900E12423 /* Debug */,
+				29AAF9E32B0B55A900E12423 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		29AAF9E42B0B55A900E12423 /* Build configuration list for PBXNativeTarget "SlothTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				29AAF9E52B0B55A900E12423 /* Debug */,
+				29AAF9E62B0B55A900E12423 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		29AAF9F42B0B61AC00E12423 /* RainbowSloth */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RainbowSloth;
+		};
+		29AAF9F62B0B624200E12423 /* RainbowSloth */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RainbowSloth;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 29AAF9B52B0B55A800E12423 /* Project object */;
+}
