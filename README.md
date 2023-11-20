@@ -30,7 +30,7 @@ Finally, we present HiddenSloth, a deniable encryption scheme, leveraging Sloth 
 
 ## This repository
 
-[![Android](https://github.com/lambdapioneer/sloth/actions/workflows/android.yaml/badge.svg?branch=main)](https://github.com/lambdapioneer/sloth/actions/workflows/android.yaml)
+[![Android](https://github.com/lambdapioneer/sloth/actions/workflows/android.yaml/badge.svg?branch=main)](https://github.com/lambdapioneer/sloth/actions/workflows/android.yaml) [![iOS](https://github.com/lambdapioneer/sloth/actions/workflows/ios.yaml/badge.svg?branch=main)](https://github.com/lambdapioneer/sloth/actions/workflows/ios.yaml)
 
 This repository is organized into the following folders:
 
