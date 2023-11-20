@@ -1,33 +1,28 @@
 # Sloth: iOS
 
-We have implemented **RainbowSloth** for iOS as a demo project included in this folder
-This code is developed as an academic prototype and not intended for production use yet.
-
-## Getting started
-
-For install the Argon2 dependency using CocoaPods.
-If you do  not have CocoaPods installed, follow the instructions on their website: https://cocoapods.org/
-
-Then enter the iOS folder and execute the following:
-
-```bash
-pod install
-```
-
-Then open the `Sloth.xcworkspace` file in Xcode.
-It is important to open the workspace file and not the project file.
+We have implemented **RainbowSloth** for iOS in this folder
+It consists of the `RainbowSloth` package and the `Sloth` demo app.
 
 
-### Adding Sloth to your iOS project
+## Using the RainbowSloth package
 
-> [!IMPORTANT]
-> We have not _yet_ published library artifacts. For now, you need to build the project locally.
+The `RainbowSloth` package is synced to another repository to allow it to be included as a Swift package dependency.
+Refer to the `README.md` over there: https://github.com/lambdapioneer/sloth-ios
+
+
+## Tests
+
+Most low-level tests live inside the `RainbowSloth` package.
+However, those that require the Secure Enclave live in the `Sloth` app test target as they require entitlements.
+When testing, make sure to execute both sets of tests.
 
 
 ## The benchmark app
 
 The project comes with a benchmark app that is also used to generate the performance numbers that are reported in the paper.
 You can install it on a real device or a simulator using Xcode.
+
+![Screenshot of the app](docs/screenshot-framed.png)
 
 For our evaluation we created .IPA files that we then run online using AWS DeviceFarm.
 During these runs we manually interacted with the app through the web interface of DeviceFarm.
@@ -38,8 +33,3 @@ To replicate these steps first start the server on a server and update the IP ad
 Build the artifacts by running `build_artifact.sh`.
 Start the simulator (or use real devices) and install the IPA file.
 Execute the scenarios under test using the UI and observe that results are collected on the server as log files.
-
-
-## Tests
-
-The project bundles tests for the individual components and you can execute them as usual through the IDE on either the simulators or a real device.
