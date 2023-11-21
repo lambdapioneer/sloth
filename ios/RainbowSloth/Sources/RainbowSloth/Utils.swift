@@ -1,7 +1,7 @@
 import Foundation
 
 
-public extension Data {
+internal extension Data {
     
     /// Creates a new `Data` object initialized with bytes decoded from the provided hexadecimal-encoded String.
     init(hex: String) {

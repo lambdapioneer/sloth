@@ -1,44 +1,14 @@
 import Foundation
 
-enum SlothSecureEnclaveError: Error {
+internal enum SlothSecureEnclaveError: Error {
     case loadFailed(String)
     case genFailed(String)
     case ecdhFailed(String)
 }
 
-public struct SecureEnclave {
+internal struct SecureEnclave {
 
-    public static func runEval(iterations: Int) throws -> [Double] {
-        // create keys to play with
-        try! resetSecretSeKey()
-        let secretSeKey = try! loadSecretSeKey()
-        debugPrint("secretSeKey", secretSeKey)
-
-        let randomPublicKey = try! genRandomPublicKey()
-        debugPrint("randomPublicKey", randomPublicKey)
-
-        // making sure all hardware syncs can happen
-        sleep(1)
-
-        var times: [Double] = []
-
-        for _ in 1...iterations {
-            let tStart = Date()
-
-            try runEvalIteration(secretKey: secretSeKey, pubKey: randomPublicKey)
-
-            times.append(Date().timeIntervalSince(tStart))
-        }
-
-        return times
-    }
-
-    public static func runEvalIteration(secretKey: SecKey, pubKey: SecKey) throws {
-        // run one ecdh as baseline
-        let _ = try! runECDH(secretKey: secretKey, pubKey: pubKey)
-    }
-
-    public static func runECDH(secretKey: SecKey, pubKey: SecKey) throws -> CFData {
+    internal static func runECDH(secretKey: SecKey, pubKey: SecKey) throws -> CFData {
         let keyPairAttr:[String : Any] = [
              kSecAttrKeySizeInBits as String: 256,
              kSecAttrKeyType as String: kSecAttrKeyTypeEC,
@@ -60,7 +30,7 @@ public struct SecureEnclave {
         return sharedKey
     }
 
-    public static func genRandomPublicKey() throws -> SecKey {
+    internal static func genRandomPublicKey() throws -> SecKey {
         let pairAttributes: NSDictionary = [
             kSecAttrKeyType: kSecAttrKeyTypeEC,
             kSecAttrKeySizeInBits: 256,
@@ -80,7 +50,7 @@ public struct SecureEnclave {
 
     }
 
-    public static func loadSecretSeKey(handle: String = "sloth_default") throws -> SecKey {
+    internal static func loadSecretSeKey(handle: String = "sloth_default") throws -> SecKey {
         let query: NSDictionary = [
             kSecClass: kSecClassKey,
             kSecAttrApplicationTag: handle,
@@ -96,7 +66,7 @@ public struct SecureEnclave {
         return item as! SecKey
     }
 
-    public static func resetSecretSeKey(handle: String = "sloth_default") throws {
+    internal static func resetSecretSeKey(handle: String = "sloth_default") throws {
         // (1) delete existing key (if any) under the given handle, as create does not
         // overwrite existing keys
         let query: NSDictionary = [
@@ -124,7 +94,7 @@ public struct SecureEnclave {
         }
     }
 
-    public static func exportPublicKey(pubKey: SecKey) throws -> CFData {
+    internal static func exportPublicKey(pubKey: SecKey) throws -> CFData {
         var cfError: Unmanaged<CFError>?
         guard let keyData = SecKeyCopyExternalRepresentation(pubKey, &cfError) else {
             throw cfError!.takeRetainedValue() as Error
@@ -132,7 +102,7 @@ public struct SecureEnclave {
         return keyData
     }
 
-    public static func importPublicKey(keyData: CFData) throws -> SecKey {
+    internal static func importPublicKey(keyData: CFData) throws -> SecKey {
         let importAttributes: NSDictionary = [
             kSecAttrKeyType: kSecAttrKeyTypeEC,
             kSecAttrKeySizeInBits: 256,
@@ -143,5 +113,41 @@ public struct SecureEnclave {
             throw cfError!.takeRetainedValue() as Error
         }
         return reimportedPublicKey
+    }
+
+    internal static func runEval(iterations: Int) throws -> [Double] {
+        // create keys to play with
+        try! resetSecretSeKey()
+        let secretSeKey = try! loadSecretSeKey()
+        debugPrint("secretSeKey", secretSeKey)
+
+        let randomPublicKey = try! genRandomPublicKey()
+        debugPrint("randomPublicKey", randomPublicKey)
+
+        // making sure all hardware syncs can happen
+        sleep(1)
+
+        var times: [Double] = []
+
+        for _ in 1...iterations {
+            let tStart = Date()
+
+            try runEvalIteration(secretKey: secretSeKey, pubKey: randomPublicKey)
+
+            times.append(Date().timeIntervalSince(tStart))
+        }
+
+        return times
+    }
+
+    private static func runEvalIteration(secretKey: SecKey, pubKey: SecKey) throws {
+        let _ = try! runECDH(secretKey: secretKey, pubKey: pubKey) // run one ecdh as baseline
+    }
+}
+
+/// Wrapper for evaluation through the demo app
+public struct SecureEnclaveEvaluationWrapper {
+    public static func runEval(iterations: Int) throws -> [Double] {
+        return try SecureEnclave.runEval(iterations: iterations)
     }
 }

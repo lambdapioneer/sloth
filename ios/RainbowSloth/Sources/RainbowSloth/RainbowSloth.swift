@@ -3,6 +3,12 @@ import Foundation
 
 private let P256_PUBLIC_KEY_SIZE = 32
 
+/// The required data to be persisted for later re-deriving the same key using `RainbowSloth`.
+public struct RainbowSlothStorageState {
+    var handle: String
+    var salt: Data
+}
+
 /// Implementation of the RainbowSloth algorithm for tuneable password-based key stretching on iOS using the SecureEnclave (SE).
 /// The parameter `n` determines the number of required SE operations and can be increased for higher security levels.
 /// Refer to the paper and documentation for more details.
@@ -38,7 +44,7 @@ public struct RainbowSloth {
 
     /// An evaluation method of the internal derive method to measure the effective time guarantees. The returned array contains
     /// `iterations` many measurements of this operation in seconds.
-    public func eval(storageState: RainbowSlothStorageState, pw: String, outputLength: Int, iterations: Int) throws -> [Double] {
+    internal func eval(storageState: RainbowSlothStorageState, pw: String, outputLength: Int, iterations: Int) throws -> [Double] {
         let pres = try preambleDerive(storageState: storageState, pw: pw)
 
         var durations = [Double]()
@@ -82,8 +88,10 @@ public struct RainbowSloth {
     }
 }
 
-/// The required data to be persisted for later re-deriving the same key using `RainbowSloth`.
-public struct RainbowSlothStorageState {
-    var handle: String
-    var salt: Data
+/// Wrapper for evaluation through the demo app
+public struct RainbowSlothEvaluationWrapper {
+    public static func runEval(sloth: RainbowSloth, iterations: Int) throws -> [Double] {
+        let (storage, _) = try sloth.keygen(pw: "test", handle: "eval", outputLength: 32)
+        return try sloth.eval(storageState: storage, pw: "test", outputLength: 32, iterations: iterations)
+    }
 }

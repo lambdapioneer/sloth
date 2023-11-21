@@ -2,10 +2,10 @@ import CryptoKit
 import Foundation
 
 /// Helper functions for creating and manipulating P256 keys.
-public struct ReHashToEc {
+internal struct ReHashToEc {
 
     /// Deterministically maps an input `seed` value to a P256 `SecKey`.
-    public static func rehashToP256(seed: Data) -> SecKey {
+    internal static func rehashToP256(seed: Data) -> SecKey {
         let salt = Data()
         let info = Data()
         var counter = 0
