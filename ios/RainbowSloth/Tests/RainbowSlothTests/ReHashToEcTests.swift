@@ -1,4 +1,4 @@
-import RainbowSloth
+@testable import RainbowSloth
 import XCTest
 
 final class ReHashToEcTests: XCTestCase {

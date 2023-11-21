@@ -1,4 +1,4 @@
-import RainbowSloth
+@testable import RainbowSloth
 import XCTest
 
 /// These tests must live in a target of an app to get the right entitlements to access the key chain / SecureEnclave.

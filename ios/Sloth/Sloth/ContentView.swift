@@ -4,11 +4,10 @@ import SwiftUI
 func runExperiment(experiment: String, n: Int, iterations: Int) throws -> [Double] {
     switch(experiment){
     case "seop":
-            return try SecureEnclave.runEval(iterations: iterations)
+        return try SecureEnclaveEvaluationWrapper.runEval(iterations: iterations)
     case "sloth":
-            let sloth = RainbowSloth(withN: n)
-            let (storage, _) = try sloth.keygen(pw: "test", handle: "eval", outputLength: 32)
-            return try sloth.eval(storageState: storage, pw: "test", outputLength: 32, iterations: iterations)
+        let sloth = RainbowSloth(withN: n)
+        return try RainbowSlothEvaluationWrapper.runEval(sloth: sloth, iterations: iterations)
     default:
         assert(false)
         return [Double]()
@@ -58,9 +57,9 @@ func backgroundWork(experiment: String, n: Int, iterations: Int) throws -> Strin
 }
 
 struct ContentView: View {
-    @State var taskSelection = "seop"
+    @State var taskSelection = "sloth"
     @State var iterations = 10
-    @State var n = 1
+    @State var n = 10
     @State var isRunning = false
     @State var taskOutput = "ready"
 
