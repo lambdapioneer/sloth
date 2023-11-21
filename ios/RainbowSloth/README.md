@@ -12,7 +12,7 @@ Add this repository as a dependency to your `Package.swift` file like so:
 
 ```swift
     dependencies: [
-        .package(url: "https://github.com/lambdapioneer/sloth-ios.git", from: "0.0.1"),
+        .package(url: "https://github.com/lambdapioneer/sloth-ios.git", from: "0.0.2"),
     ],
     
     // ...
