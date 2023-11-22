@@ -101,6 +101,10 @@ signing {
     sign(publishing.publications["release"])
 }
 
+tasks.withType(Sign::class.java) {
+    enabled = findProperty("disableSigning") == null
+}
+
 dependencies {
     implementation(libs.androidx.core.ktx)
 

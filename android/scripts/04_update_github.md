@@ -2,8 +2,8 @@
 
 ```
 git add .
-git commit -m "Updated version to 1.CHANGEHERE.0"
-git tag -a v1.CHANGEHERE.0 COMMITIDENTIFIER
+git commit --allow-empty -m "Updated version to v<<CHANGEHERE>>"
+git tag -a v<<CHANGEHERE>> <<COMMITIDENTIFIER>>
 ```
 
 ## PUSH to GitHub
