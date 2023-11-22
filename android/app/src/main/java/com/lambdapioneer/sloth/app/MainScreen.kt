@@ -31,7 +31,7 @@ import com.lambdapioneer.sloth.app.ui.theme.Teal
 
 @Composable
 internal fun MainScreen(model: MainViewModel) {
-    var password by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("test") }
     val key = model.key.collectAsState().value
     val busy = model.busy.collectAsState().value
     val error = model.error.collectAsState().value
