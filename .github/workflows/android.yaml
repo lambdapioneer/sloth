@@ -27,6 +27,21 @@ jobs:
           distribution: "corretto"
           cache: gradle
 
-      - name: Build (debug) with Gradle
+      - name: Install dependencies
+        run: sudo apt-get install -y tree
+
+      - name: Build app (debug) with Gradle
         working-directory: android
-        run: ./gradlew assembleDebug
+        run: ./gradlew :app:assembleDebug
+
+      - name: Build lib release and publish locally
+        working-directory: android
+        run: ./scripts/01_publish_local.sh
+
+      - name: Publish the local Maven repository
+        uses: actions/upload-artifact@v3
+        with:
+          name: maven-repository
+          path: |
+            android/maven/*
+            !android/maven/.gitignore

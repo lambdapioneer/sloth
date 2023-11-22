@@ -15,9 +15,14 @@ After that, you can create new `LongSloth` or `HiddenSloth` instances under diff
 
 ### Adding the build dependencies
 
-> [!IMPORTANT]
-> We have not _yet_ published the Maven artifacts. For now, you need to build the library yourself and include it as a local module.
+Add the following dependency to your gradle build file (using Kotlin DSL syntax):
 
+```kotlin
+dependencies {
+    implementation("com.lambdapioneer.sloth:sloth:0.1.1")
+    // ...
+}
+```
 
 ### Initializing the Sloth library
 
@@ -107,8 +112,12 @@ We decided to make the password hashing algorithm modular and by default the lib
 However, we provide `sloth-pwhash-libsodium` as an alternative that uses the Argon2id algorithm from the [Libsodium](https://libsodium.org/) library.
 By keeping it separate we can avoid the overhead of including the Libsodium library in apps that do not need it.
 
-> [!IMPORTANT]
-> We have not _yet_ published the Maven artifacts. For now, you need to build the library yourself and include it as a local module.
+```kotlin
+dependencies {
+    implementation("com.lambdapioneer.sloth:sloth-pwhash-libsodium:0.1.1")
+    // ...
+}
+```
 
 Then, you can opt for the Argon2 password hashing algorithm by calling `SlothLib(pwHash = LibSodiumArgon2PwHash())` when initializing the Sloth library.
 

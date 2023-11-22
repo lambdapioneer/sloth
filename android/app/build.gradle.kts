@@ -48,6 +48,8 @@ android {
 dependencies {
     implementation(project(":sloth"))
     implementation(project(":sloth-pwhash-libsodium"))
+    //implementation("com.lambdapioneer.sloth:sloth:0.1.1")
+    //implementation("com.lambdapioneer.sloth:sloth-pwhash-libsodium:0.1.1")
 
     implementation(platform(libs.compose.bom))
     implementation(libs.activity.compose)
