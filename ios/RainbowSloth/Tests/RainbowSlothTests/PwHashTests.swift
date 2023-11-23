@@ -2,7 +2,7 @@
 import XCTest
 
 final class PwHashTests: XCTestCase {
-    
+
     func testPwHashOutputLengthMatches() throws {
         let pw = "test".data(using: .utf8)!
         let salt = Data(hex: "0123456789ABCDEF0123456789ABCDEF")
@@ -11,7 +11,7 @@ final class PwHashTests: XCTestCase {
 
         XCTAssertEqual(res.count, 42)
     }
-    
+
     func testPwHashDifferentPasswordsDifferentOutput() throws {
         let pw1 = "test".data(using: .utf8)!
         let pw2 = "test2".data(using: .utf8)!
@@ -22,7 +22,7 @@ final class PwHashTests: XCTestCase {
 
         XCTAssertNotEqual(res1, res2)
     }
-    
+
     func testPwHashDifferentSaltsDifferentOutput() throws {
         let pw = "test".data(using: .utf8)!
         let salt1 = Data(hex: "0123456789ABCDEF0123456789ABCDEF")
@@ -33,7 +33,7 @@ final class PwHashTests: XCTestCase {
 
         XCTAssertNotEqual(res1, res2)
     }
-    
+
     func testPwHashSameParametersSameOutput() throws {
         let pw = "test".data(using: .utf8)!
         let salt = Data(hex: "0123456789ABCDEF0123456789ABCDEF")

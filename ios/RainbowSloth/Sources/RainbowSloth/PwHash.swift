@@ -3,7 +3,7 @@ import Foundation
 
 /// Wrapper around the Argon2id password hashing algorithm as provided by `Sodium`.
 internal struct PwHash {
-    
+
     /// Derives a key from the given `salt` and password `pw`. The output will be `outputLength` bytes long.
     internal static func derive(salt: Data, pw: Data, outputLength: Int) -> Data {
         // OWASP: "Use Argon2id with a minimum configuration of 19 MiB of memory, an iteration count of 2, and 1 degree of parallelism."
@@ -18,7 +18,7 @@ internal struct PwHash {
         )
         return Data(res!)
     }
-    
+
     /// Creates a new random `salt` byte array that can be used with the `derive` function.
     internal static func randomSalt(outputLength: Int = 16) -> Data {
         var bytes = [UInt8](repeating: 0, count: outputLength)

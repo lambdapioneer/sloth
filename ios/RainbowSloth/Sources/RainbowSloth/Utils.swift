@@ -2,7 +2,7 @@ import Foundation
 
 
 internal extension Data {
-    
+
     /// Creates a new `Data` object initialized with bytes decoded from the provided hexadecimal-encoded String.
     init(hex: String) {
         let l = hex.count / 2

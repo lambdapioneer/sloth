@@ -68,13 +68,13 @@ struct ContentView: View {
             Spacer()
             Text("Rainbow Sloth 🦥").font(.title)
             Spacer()
-            
+
             Text("Experiment to run:").font(.headline)
             Picker("Experiment", selection: $taskSelection, content: {
                 Text("SE-OP").tag("seop")
                 Text("RainbowSloth").tag("sloth")
             }).disabled(isRunning)
-            
+
             Text("Rainbow parameter n:").font(.headline)
             Picker("Rainbow parameter n", selection: $n, content: {
                 Text("1").tag(1)
@@ -82,7 +82,7 @@ struct ContentView: View {
                 Text("100").tag(100)
                 Text("1000").tag(1000)
             }).disabled(isRunning || taskSelection != "sloth")
-            
+
             Text("Number of experiment iterations:").font(.headline)
             Picker("Number of experiment iterations", selection: $iterations, content: {
                 Text("1").tag(1)
@@ -90,7 +90,7 @@ struct ContentView: View {
                 Text("100").tag(100)
                 Text("1000").tag(1000)
             }).disabled(isRunning)
-            
+
             Button("Start run") {
                 taskOutput = "started"
                 isRunning = true
@@ -116,7 +116,7 @@ struct ContentView: View {
             }
             .buttonStyle(.borderedProminent)
             .padding().disabled(isRunning)
-            
+
             Text("Status/output:").font(.headline)
             if isRunning {
                 ProgressView()
