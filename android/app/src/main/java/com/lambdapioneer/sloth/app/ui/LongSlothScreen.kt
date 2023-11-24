@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,12 +38,14 @@ internal fun LongSlothScreen(model: LongSlothViewModel) {
     val key = model.key.collectAsState().value
     val busy = model.busy.collectAsState().value
     val error = model.error.collectAsState().value
+    val context = LocalContext.current
 
     LongSlothScreenContent(
         password = password,
         key = key,
         busy = busy,
         error = error,
+        onRunBenchmark = { model.runBenchmark(context) },
         onPasswordChange = { password = it },
         onGenerateKey = { model.generateKey(it) },
         onReDeriveKey = { model.deriveKey(it) },
@@ -56,6 +59,7 @@ private fun LongSlothScreenContent(
     key: ByteArray?,
     busy: Boolean = false,
     error: String? = null,
+    onRunBenchmark: () -> Unit = {},
     onPasswordChange: (String) -> Unit = {},
     onGenerateKey: (String) -> Unit = {},
     onReDeriveKey: (String) -> Unit = {},
@@ -78,6 +82,7 @@ private fun LongSlothScreenContent(
                     key = key,
                     busy = busy,
                     error = error,
+                    onRunBenchmark = onRunBenchmark,
                     onPasswordChange = onPasswordChange,
                     onGenerateKey = onGenerateKey,
                     onReDeriveKey = onReDeriveKey
@@ -93,6 +98,7 @@ fun LongSlothMainContent(
     key: ByteArray?,
     busy: Boolean = false,
     error: String?,
+    onRunBenchmark: () -> Unit,
     onPasswordChange: (String) -> Unit,
     onGenerateKey: (String) -> Unit,
     onReDeriveKey: (String) -> Unit,
@@ -106,6 +112,16 @@ fun LongSlothMainContent(
             text = "Simple demo for creating new LongSloth keys and re-deriving them afterwards.",
             modifier = Modifier.padding(bottom = 8.dp)
         )
+
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            enabled = !busy,
+            onClick = { onRunBenchmark() }
+        ) {
+            Text("Run benchmark (target duration 1 second)")
+        }
 
         TextField(
             modifier = Modifier.fillMaxWidth(),
