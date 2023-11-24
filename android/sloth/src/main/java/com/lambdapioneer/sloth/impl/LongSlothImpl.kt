@@ -2,6 +2,7 @@ package com.lambdapioneer.sloth.impl
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.annotation.VisibleForTesting
 import com.lambdapioneer.sloth.crypto.Hkdf
 import com.lambdapioneer.sloth.crypto.PwHash
 import com.lambdapioneer.sloth.secureelement.KeyHandle
@@ -11,7 +12,7 @@ import com.lambdapioneer.sloth.storage.WriteableStorage
 import com.lambdapioneer.sloth.utils.NoopTracer
 import com.lambdapioneer.sloth.utils.Tracer
 
-
+@VisibleForTesting
 @RequiresApi(Build.VERSION_CODES.P)
 class LongSlothImpl(
     private val params: LongSlothParams,

@@ -6,9 +6,11 @@ import com.lambdapioneer.sloth.crypto.Pbkdf2PwHash
 import com.lambdapioneer.sloth.storage.OnDiskStorage
 import com.lambdapioneer.sloth.testing.KIB
 import com.lambdapioneer.sloth.testing.MIB
+import com.lambdapioneer.sloth.testing.createSecureElementOrSkip
 import com.lambdapioneer.sloth.utils.NoopTracer
 import com.lambdapioneer.sloth.utils.secureRandomBytes
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.junit.runner.RunWith
 import javax.crypto.AEADBadTagException
@@ -21,6 +23,7 @@ class HiddenSlothTest {
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private val storage = OnDiskStorage(context)
+    private val defaultPayloadLength = 10 * KIB
 
     @Test
     fun testHiddenSloth_whenInit_thenNoThrows() {
@@ -43,24 +46,48 @@ class HiddenSlothTest {
     @Test
     fun testHiddenSloth_whenEncryptMaxSize_thenDecryptReturnsSame() {
         val instance = createInstance()
-        val data = secureRandomBytes(instance.maxPayloadSize())
+        val data = secureRandomBytes(defaultPayloadLength)
 
         instance.init(storage, DEFAULT_HANDLE)
         instance.encrypt(storage, DEFAULT_PASSWORD, data)
-        val actual = instance.decrypt(storage, DEFAULT_PASSWORD)
 
+        val actual = instance.decrypt(storage, DEFAULT_PASSWORD)
         assertThat(actual).isEqualTo(data)
     }
 
     @Test
-    fun testHiddenSloth_whenEncrypt100MiB_thenDecryptReturnsSame() {
-        val instance = createInstance(size = 100 * MIB)
-        val data = secureRandomBytes(instance.maxPayloadSize())
+    fun testHiddenSloth_whenEncryptMaxSize_thenOnDiskCiphertextHasExpectedSize() {
+        val instance = createInstance(payloadLength = defaultPayloadLength)
+        val data = secureRandomBytes(defaultPayloadLength)
 
         instance.init(storage, DEFAULT_HANDLE)
         instance.encrypt(storage, DEFAULT_PASSWORD, data)
-        val actual = instance.decrypt(storage, DEFAULT_PASSWORD)
 
+        val blob = storage.get(HiddenSlothKeys.BLOB.key)
+        val expectedSize = defaultPayloadLength + HiddenSlothImpl.ciphertextTotalOverhead()
+        assertThat(blob.size).isEqualTo(expectedSize)
+    }
+
+    @Test
+    fun testHiddenSloth_whenEncryptMoreThanMaxSize_thenFails() {
+        val instance = createInstance()
+        val data = secureRandomBytes(defaultPayloadLength + 1)
+
+        instance.init(storage, DEFAULT_HANDLE)
+        assertThatThrownBy { instance.encrypt(storage, DEFAULT_PASSWORD, data) }
+            .isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessageContaining("payload too large")
+    }
+
+    @Test
+    fun testHiddenSloth_whenEncrypt100MiB_thenDecryptReturnsSame() {
+        val instance = createInstance(payloadLength = 100 * MIB)
+        val data = secureRandomBytes(100 * MIB)
+
+        instance.init(storage, DEFAULT_HANDLE)
+        instance.encrypt(storage, DEFAULT_PASSWORD, data)
+
+        val actual = instance.decrypt(storage, DEFAULT_PASSWORD)
         assertThat(actual).isEqualTo(data)
     }
 
@@ -108,16 +135,14 @@ class HiddenSlothTest {
         instance.init(storage, DEFAULT_HANDLE)
         instance.encrypt(storage, DEFAULT_PASSWORD, data)
         instance.ratchet(storage, NoopTracer())
-        val actual = instance.decrypt(storage, DEFAULT_PASSWORD)
 
+        val actual = instance.decrypt(storage, DEFAULT_PASSWORD)
         assertThat(actual).isEqualTo(data)
     }
 
-    private fun createInstance(size: Int = 100 * KIB) = HiddenSlothImpl(
-        params = HiddenSlothParams(storageTotalSize = size),
-        secureElement = com.lambdapioneer.sloth.testing.createSecureElementOrSkip(
-            context
-        ),
+    private fun createInstance(payloadLength: Int = defaultPayloadLength) = HiddenSlothImpl(
+        params = HiddenSlothParams(payloadMaxLength = payloadLength),
+        secureElement = createSecureElementOrSkip(context),
         pwHash = Pbkdf2PwHash(),
     )
 }

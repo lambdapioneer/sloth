@@ -92,7 +92,7 @@ class SlothLibTest {
         val pw = "password"
 
         // create a HiddenSloth instance
-        val params = HiddenSlothParams(storageTotalSize = 1 * MIB)
+        val params = HiddenSlothParams(payloadMaxLength = 1 * MIB)
         val hiddenSloth1 = instance.getHiddenSlothInstance(
             identifier = "hidden_sloth_test",
             storage = storage,

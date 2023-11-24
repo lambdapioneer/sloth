@@ -2,10 +2,12 @@ package com.lambdapioneer.sloth.impl
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.annotation.VisibleForTesting
 import com.lambdapioneer.sloth.SlothInconsistentState
 import com.lambdapioneer.sloth.SlothStorageKeyNotFound
 import com.lambdapioneer.sloth.crypto.AuthenticatedEncryption
 import com.lambdapioneer.sloth.crypto.PwHash
+import com.lambdapioneer.sloth.impl.HiddenSlothKeys.*
 import com.lambdapioneer.sloth.secureelement.KeyHandle
 import com.lambdapioneer.sloth.secureelement.SecureElement
 import com.lambdapioneer.sloth.storage.ReadableStorage
@@ -18,7 +20,10 @@ import java.nio.ByteBuffer
 import java.util.*
 import javax.crypto.AEADBadTagException
 
-enum class HiddenSlothKeys(val key: String) {
+/**
+ * Keys for the values persisted in storage.
+ */
+internal enum class HiddenSlothKeys(val key: String) {
     H_DEMS("hDems"),
     SE_IV("seIv"),
     IV("iv"),
@@ -27,6 +32,7 @@ enum class HiddenSlothKeys(val key: String) {
     TIV("tiv"),
 }
 
+@VisibleForTesting
 @RequiresApi(Build.VERSION_CODES.P)
 class HiddenSlothImpl(
     private val params: HiddenSlothParams,
@@ -51,7 +57,7 @@ class HiddenSlothImpl(
         dessInit(storage, hDess)
 
         val hDems = h + "_dems".encodeToByteArray()
-        storage.put("hDems", hDems)
+        storage.put(H_DEMS.key, hDems)
 
         secureElement.aesCtrGenKey(KeyHandle(hDems))
 
@@ -79,9 +85,9 @@ class HiddenSlothImpl(
         return exists.any()
     }
 
-    fun maxPayloadSize() =
-        params.storageTotalSize - PAYLOAD_SIZE_FIELD_LEN - PAYLOAD_SIZE_FIELD_PADDING
-
+    /**
+     * Encrypts the given [data] using the password [pw] and stores the ciphertext in [storage].
+     */
     fun encrypt(
         storage: WriteableStorage,
         pw: String,
@@ -90,39 +96,64 @@ class HiddenSlothImpl(
     ) {
         tracer.start()
 
-        require(data.size <= maxPayloadSize())
-        val hDems = KeyHandle(storage.get("hDems"))
+        require(data.size <= params.payloadMaxLength) { "payload too large" }
 
+        //
+        // (1) Encrypt the inner data using the single-snapshot scheme
+        //
         val dessEncryptionResult = dessEncrypt(storage, pw, data)
 
+        //
+        // (2) Encrypt the inner ciphertext in another layer of encryption using temporary secrets
+        // `tk` and `tiv`. This later allows us to ratchet the outer-layer without modifying the
+        // inner layer.
+        //
         val tk = AuthenticatedEncryption.keyGen()
         val tiv = AuthenticatedEncryption.ivGen()
-        val encryptedBlobAndTag =
-            AuthenticatedEncryption.encrypt(tk, tiv, dessEncryptionResult.blobAndTag)
-        storage.put("blob", encryptedBlobAndTag)
+        val encryptedBlobAndTag = AuthenticatedEncryption.encrypt(
+            k = tk,
+            iv = tiv,
+            data = dessEncryptionResult.blobAndTag
+        )
+        storage.put(BLOB.key, encryptedBlobAndTag)
 
+        //
+        // (3) Encrypt the secrets `tk` and `tiv` using an outer layer of encryption using the
+        // a new key inside the secure element referenced under `hDems`.
+        //
         val seIv = secureElement.aesCtrGenIv()
-        storage.put("seIv", seIv)
+        storage.put(SE_IV.key, seIv)
 
         // unrolled for loop (the `tags` are part of the cipher text in this implementation)
-        storage.put("iv", secureElement.aesCtrEncrypt(hDems, seIv, dessEncryptionResult.iv))
-        storage.put("tk", secureElement.aesCtrEncrypt(hDems, seIv, tk))
-        storage.put("tiv", secureElement.aesCtrEncrypt(hDems, seIv, tiv))
+        val hDems = KeyHandle(storage.get(H_DEMS.key))
+        storage.put(IV.key, secureElement.aesCtrEncrypt(hDems, seIv, dessEncryptionResult.iv))
+        storage.put(TK.key, secureElement.aesCtrEncrypt(hDems, seIv, tk))
+        storage.put(TIV.key, secureElement.aesCtrEncrypt(hDems, seIv, tiv))
 
         tracer.finish()
     }
 
     /**
-     * Authenticates the ciphertext stored in [storage] key stored in the secure element. If the
-     * storage blob does not authenticate, an [AEADBadTagException] is thrown.
+     * Authenticates the ciphertext stored in [storage] using key stored in the secure element. This
+     * simply checks the outer layer of encryption and therefore it is not dependent of the user
+     * passphrase and does not leak any information about the presence of any meaningful encrypted
+     * data.
+     *
+     * If the storage blob does not authenticate, an [AEADBadTagException] is thrown.
      */
     @Throws(AEADBadTagException::class)
     fun authenticate(storage: ReadableStorage) {
-        val hDems = KeyHandle(storage.get("hDems"))
-        val seIv = storage.get("seIv")
+        //
+        // (1) Decrypt the `tk` secret
+        //
+        val hDems = KeyHandle(storage.get(H_DEMS.key))
+        val seIv = storage.get(SE_IV.key)
+        val tk = secureElement.aesCtrDecrypt(hDems, seIv, storage.get(TK.key))
 
-        val tk = secureElement.aesCtrDecrypt(hDems, seIv, storage.get("tk"))
-        AuthenticatedEncryption.authenticate(tk, storage.get("blob"))
+        //
+        // (2) Authenticate the outer ciphertext
+        //
+        AuthenticatedEncryption.authenticate(tk, storage.get(BLOB.key))
     }
 
     /**
@@ -130,15 +161,22 @@ class HiddenSlothImpl(
      * the ciphertext.
      */
     fun prepareCachedSecrets(storage: ReadableStorage, pw: String): HiddenSlothCachedSecrets {
-        val hDems = KeyHandle(storage.get("hDems"))
-        val seIv = storage.get("seIv")
+        val hDems = KeyHandle(storage.get(H_DEMS.key))
+        val seIv = storage.get(SE_IV.key)
 
-        return HiddenSlothCachedSecrets(
-            iv = secureElement.aesCtrDecrypt(hDems, seIv, storage.get("iv")),
-            tk = secureElement.aesCtrDecrypt(hDems, seIv, storage.get("tk")),
-            tiv = secureElement.aesCtrDecrypt(hDems, seIv, storage.get("tiv")),
-            k = dessDeriveKey(storage, pw),
-        )
+        //
+        // (1) Decrypt the `iv`, `tk` and `tiv` secrets for the outer ciphertext
+        //
+        val iv = secureElement.aesCtrDecrypt(hDems, seIv, storage.get(IV.key))
+        val tk = secureElement.aesCtrDecrypt(hDems, seIv, storage.get(TK.key))
+        val tiv = secureElement.aesCtrDecrypt(hDems, seIv, storage.get(TIV.key))
+
+        //
+        // (2) Derive the encryption key for the inner ciphertext
+        //
+        val k = dessDeriveKey(storage, pw)
+
+        return HiddenSlothCachedSecrets(iv = iv, tk = tk, tiv = tiv, k = k)
     }
 
     /**
@@ -148,8 +186,7 @@ class HiddenSlothImpl(
      *
      * If [decryptionOffsetAndLength] is provided, only the ciphertext in the range specified by
      * [decryptionOffsetAndLength] is decrypted. Note that in this case the decryption is not
-     * authenticated.The offset and length must be aligned at AES block
-     * boundaries (16 bytes, see[AE_BLOCK_LEN]).
+     * authenticated. The offset and length must be aligned at AES block boundaries (16 bytes).
      */
     fun decrypt(
         storage: ReadableStorage,
@@ -164,19 +201,42 @@ class HiddenSlothImpl(
 
         tracer.start()
         try {
-            val hDems = KeyHandle(storage.get("hDems"))
-            val seIv = storage.get("seIv")
+            val hDems = KeyHandle(storage.get(H_DEMS.key))
+            val seIv = storage.get(SE_IV.key)
 
-            // unrolled for loop (the `tags` are part of the cipher text in this implementation)
-            val iv =
-                cachedSecrets?.iv ?: secureElement.aesCtrDecrypt(hDems, seIv, storage.get("iv"))
-            val tk =
-                cachedSecrets?.tk ?: secureElement.aesCtrDecrypt(hDems, seIv, storage.get("tk"))
-            val tiv =
-                cachedSecrets?.tiv ?: secureElement.aesCtrDecrypt(hDems, seIv, storage.get("tiv"))
+            //
+            // (1) Decrypt the `iv`, `tk` and `tiv` secrets for the outer ciphertext
+            // OR use the values from the cached secrets
+            //
+            val iv = cachedSecrets?.iv ?: secureElement.aesCtrDecrypt(
+                keyHandle = hDems,
+                iv = seIv,
+                data = storage.get(IV.key)
+            )
+            val tk = cachedSecrets?.tk ?: secureElement.aesCtrDecrypt(
+                keyHandle = hDems,
+                iv = seIv,
+                data = storage.get(TK.key)
+            )
+            val tiv = cachedSecrets?.tiv ?: secureElement.aesCtrDecrypt(
+                keyHandle = hDems,
+                iv = seIv,
+                data = storage.get(TIV.key)
+            )
 
-            val blobAndTag = AuthenticatedEncryption.decrypt(tk, tiv, storage.get("blob"))
+            //
+            // (2) Decrypt the outer ciphertext using the `tk` and `tiv` secrets
+            //
+            val blobAndTag = AuthenticatedEncryption.decrypt(
+                k = tk,
+                iv = tiv,
+                ciphertextAndTag = storage.get(BLOB.key)
+            )
 
+            //
+            // (3) Decrypt the inner ciphertext using the password-derived key (or `k` from the
+            // cached secrets)
+            //
             return dessDecrypt(
                 storage = storage,
                 pw = pw,
@@ -193,19 +253,26 @@ class HiddenSlothImpl(
     fun ratchet(storage: WriteableStorage, tracer: Tracer = NoopTracer()) {
         tracer.start()
 
-        val hDems = KeyHandle(storage.get("hDems"))
-        val seIv = storage.get("seIv")
+        val hDems = KeyHandle(storage.get(H_DEMS.key))
+        val seIv = storage.get(SE_IV.key)
 
-        // unrolled for loop (the `tags` are part of the cipher text in this implementation)
-        val iv = secureElement.aesCtrDecrypt(hDems, seIv, storage.get("iv"))
-        val tk = secureElement.aesCtrDecrypt(hDems, seIv, storage.get("tk"))
-        val tiv = secureElement.aesCtrDecrypt(hDems, seIv, storage.get("tiv"))
+        //
+        // (1) Decrypt the `iv`, `tk` and `tiv` secrets for the outer ciphertext
+        //
+        val iv = secureElement.aesCtrDecrypt(hDems, seIv, storage.get(IV.key))
+        val tk = secureElement.aesCtrDecrypt(hDems, seIv, storage.get(TK.key))
+        val tiv = secureElement.aesCtrDecrypt(hDems, seIv, storage.get(TIV.key))
 
-        // re-encrypt `blobAndTag` with new keys
+        //
+        // (2) Create new `tk` and `tiv` secrets for the outer ciphertext
+        //
         val newTk = AuthenticatedEncryption.keyGen()
         val newTiv = AuthenticatedEncryption.ivGen()
 
-        val dataAndTag = storage.get("blob")
+        //
+        // (3) Re-encrypt the outer ciphertext using the new `tk` and `tiv` secrets
+        //
+        val dataAndTag = storage.get(BLOB.key)
         AuthenticatedEncryption.inplaceDecryptEncrypt(
             dataAndTag = dataAndTag,
             decryptK = tk,
@@ -213,14 +280,16 @@ class HiddenSlothImpl(
             encryptK = newTk,
             encryptIv = newTiv,
         )
-        storage.put("blob", dataAndTag)
+        storage.put(BLOB.key, dataAndTag)
 
+        //
+        // (4) Re-encrypt the new `iv`, `tk` and `tiv` secrets for the outer ciphertext using a
+        // fresh key inside the secure element.
+        //
         secureElement.aesCtrGenKey(hDems)
-
-        // unrolled for loop (the `tags` are part of the cipher text in this implementation)
-        storage.put("iv", secureElement.aesCtrEncrypt(hDems, seIv, iv))
-        storage.put("tk", secureElement.aesCtrEncrypt(hDems, seIv, newTk))
-        storage.put("tiv", secureElement.aesCtrEncrypt(hDems, seIv, newTiv))
+        storage.put(IV.key, secureElement.aesCtrEncrypt(hDems, seIv, iv))
+        storage.put(TK.key, secureElement.aesCtrEncrypt(hDems, seIv, newTk))
+        storage.put(TIV.key, secureElement.aesCtrEncrypt(hDems, seIv, newTiv))
 
         tracer.finish()
     }
@@ -229,6 +298,9 @@ class HiddenSlothImpl(
     // All DESS methods
     //
 
+    /**
+     * Initializes the DESS scheme. This method must be called before any other DESS method.
+     */
     private fun dessInit(storage: WriteableStorage, h: ByteArray) {
         val pw = secureRandomBytes(params.lambda).decodeToString()
 
@@ -238,9 +310,22 @@ class HiddenSlothImpl(
         dessEncrypt(storage, pw, ByteArray(0))
     }
 
+    /**
+     * Derives the DESS key from the password [pw] using the LongSloth scheme. There should be no
+     * (meaningful) authentication of the inner ciphertext before this method is called.
+     */
+    private fun dessDeriveKey(
+        storage: ReadableStorage,
+        pw: String,
+    ) = longSloth.derive(storage = storage, pw = pw, outputLengthBytes = slothKeyLenInBytes)
+
     @Suppress("ArrayInDataClass")
     data class DessEncryptionResult(val iv: ByteArray, val blobAndTag: ByteArray)
 
+    /**
+     * Encrypts the given [data] using the password [pw] and returns the ciphertext and the IV.
+     * Note that the storage is read-only and the ciphertext is not stored in the storage.
+     */
     private fun dessEncrypt(
         storage: ReadableStorage,
         pw: String,
@@ -248,9 +333,7 @@ class HiddenSlothImpl(
     ): DessEncryptionResult {
         val k = dessDeriveKey(storage, pw)
 
-        // TODO: do we allocate too much here? Compare with `maxPayloadSize`
-        val content =
-            ByteBuffer.allocate(params.storageTotalSize + PAYLOAD_SIZE_FIELD_LEN + PAYLOAD_SIZE_FIELD_PADDING)
+        val content = ByteBuffer.allocate(params.payloadMaxLength + contentOverhead())
         content.putInt(data.size)
         content.put(ByteArray(PAYLOAD_SIZE_FIELD_PADDING))
         content.put(data)
@@ -263,6 +346,17 @@ class HiddenSlothImpl(
         )
     }
 
+    /**
+     * Decrypts the given [blobAndTag] using the password [pw] and returns the plaintext. Note that
+     * the storage is read-only and will not be updated.
+     *
+     * If [cachedSecrets] is provided, the decryption is performed using the cached secrets.
+     *
+     * If [decryptionOffsetAndLength] is provided, only the ciphertext in the range specified by
+     * [decryptionOffsetAndLength] is decrypted. Note that in this case the decryption is not
+     * authenticated. The offset and length must be aligned at AES block boundaries (16 bytes, see
+     * [AuthenticatedEncryption.BLOCK_LEN]).
+     */
     @Suppress("UsePropertyAccessSyntax")
     private fun dessDecrypt(
         storage: ReadableStorage,
@@ -275,7 +369,7 @@ class HiddenSlothImpl(
         // caller enforces that either `cachedSecrets` or `pw` is not null
         val k = cachedSecrets?.k ?: dessDeriveKey(storage, pw!!)
 
-        val offsetPastLenFieldIncludingPadding = PAYLOAD_SIZE_FIELD_LEN + PAYLOAD_SIZE_FIELD_PADDING
+        val offsetPastLenFieldIncludingPadding = contentOverhead()
         if (decryptionOffsetAndLength != null) {
             // Trust the caller to provide a valid offset and length. We offset it into the overall
             // ciphertext by moving the offset past the field containing the payload size and the
@@ -305,16 +399,29 @@ class HiddenSlothImpl(
         }
     }
 
-    private fun dessDeriveKey(
-        storage: ReadableStorage,
-        pw: String,
-    ) = longSloth.derive(storage, pw, slothKeyLenInBytes)
-
     companion object {
         // The ciphertext starts with 4 Bytes for the payload size. This information is then padded to
         // the next AES block boundary. This makes offsets into the ciphertext block aligned.
         private const val PAYLOAD_SIZE_FIELD_LEN = Int.SIZE_BYTES
         private const val PAYLOAD_SIZE_FIELD_PADDING =
             AuthenticatedEncryption.BLOCK_LEN - PAYLOAD_SIZE_FIELD_LEN
+
+        /**
+         * The total overhead in bytes for the content. This includes the payload size field and the
+         * padding.
+         */
+        fun contentOverhead(): Int {
+            return PAYLOAD_SIZE_FIELD_LEN + PAYLOAD_SIZE_FIELD_PADDING
+        }
+
+        /**
+         * The total ciphertext overhead in bytes. This includes the contentOverhead and two tags
+         * from the authenticated encryption. One is for the outer ciphertext (enabling the ratchet
+         * operation) and one is for the inner ciphertext (authenticating the data and verifying
+         * the password).
+         */
+        fun ciphertextTotalOverhead(): Int {
+            return contentOverhead() + 2 * AuthenticatedEncryption.TAG_LEN
+        }
     }
 }

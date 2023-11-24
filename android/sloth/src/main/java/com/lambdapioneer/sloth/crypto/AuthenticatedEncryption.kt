@@ -20,7 +20,7 @@ internal class AuthenticatedEncryption {
 
     companion object {
         private const val KEY_LEN = 32
-        private const val TAG_LEN = 16
+        const val TAG_LEN = 16
         internal const val IV_LEN = 16
         internal const val BLOCK_LEN = 16
 
@@ -62,6 +62,10 @@ internal class AuthenticatedEncryption {
             }
         }
 
+        /**
+         * Authenticates the tag only. Throws an [AEADBadTagException] if the tag does not match.
+         * Note that the tag does not require the IV value.
+         */
         fun authenticate(k: ByteArray, dataAndTag: ByteArray) {
             verifyTag(k, dataAndTag)
         }

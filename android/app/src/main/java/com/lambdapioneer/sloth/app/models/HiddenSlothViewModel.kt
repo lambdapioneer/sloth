@@ -9,7 +9,6 @@ import com.lambdapioneer.sloth.SlothLib
 import com.lambdapioneer.sloth.app.SampleApplication
 import com.lambdapioneer.sloth.impl.HiddenSlothParams
 import com.lambdapioneer.sloth.impl.LongSlothParams
-
 import com.lambdapioneer.sloth.storage.OnDiskStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +26,7 @@ class HiddenSlothViewModel(
         identifier = "test",
         storage = storage,
         params = HiddenSlothParams(
-            storageTotalSize = 32 * 1024,
+            payloadMaxLength = 32 * 1024,
             longSlothParams = LongSlothParams(l = 10_000)
         )
     )

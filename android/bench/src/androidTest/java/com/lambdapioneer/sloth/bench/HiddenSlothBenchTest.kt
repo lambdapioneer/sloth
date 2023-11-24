@@ -107,7 +107,7 @@ class HiddenSlothBenchTest {
         val methodName = ruleTestName.methodName
 
         val params = HiddenSlothParams(
-            storageTotalSize = parameterMaxSize,
+            payloadMaxLength = parameterMaxSize,
             longSlothParams = LongSlothParams(l = parameterL),
         )
 
@@ -120,7 +120,7 @@ class HiddenSlothBenchTest {
         )
         hiddenSloth.init(storage, DEFAULT_HANDLE)
 
-        val maxSizeEncryptionPayload = ByteArray(hiddenSloth.maxPayloadSize())
+        val maxSizeEncryptionPayload = ByteArray(parameterMaxSize)
 
         // if we test decryption, we ensure that we have previously encrypted data
         if (operationUnderTest == HiddenSlothOperationUnderTest.DECRYPT || operationUnderTest == HiddenSlothOperationUnderTest.DECRYPT_WITH_CACHED_KEY) {
