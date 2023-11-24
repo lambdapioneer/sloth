@@ -1,5 +1,7 @@
 package com.lambdapioneer.sloth.app.models
 
+import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -12,9 +14,10 @@ import com.lambdapioneer.sloth.storage.OnDiskStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.time.Duration
 
 class LongSlothViewModel(
-    slothLib: SlothLib,
+    private val slothLib: SlothLib,
     private val storage: OnDiskStorage,
 ) : ViewModel() {
     val key = MutableStateFlow<ByteArray?>(null)
@@ -36,6 +39,20 @@ class LongSlothViewModel(
     fun deriveKey(password: String) {
         runLongTaskInBackground {
             key.value = longSloth.deriveForExistingKey(pw = password)
+        }
+    }
+
+    fun runBenchmark(context: Context) {
+        runLongTaskInBackground {
+            val benchmarkResult = slothLib.benchmarkParameter(Duration.ofSeconds(1))
+            viewModelScope.launch(Dispatchers.Main) {
+                val durationMillis = benchmarkResult.duration.toMillis()
+                Toast.makeText(
+                    context,
+                    "l=${benchmarkResult.l} -> $durationMillis ms",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
     }
 

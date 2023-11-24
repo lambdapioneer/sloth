@@ -17,6 +17,18 @@ class LongSloth internal constructor(
     }
 
     /**
+     * This method should be called on every app start. It ensures that
+     * the storage is initialized and its last-modified timestamps do not
+     * leak usage information.
+     */
+    fun onAppStart() {
+        val namespacedHandle = identifierToHandle(identifier)
+        val namespacedStorage = storage.getOrCreateNamespace(identifier)
+
+        impl.onAppStart(storage = namespacedStorage, h=namespacedHandle)
+    }
+
+    /**
      * Creates a new key with the given identifier and password.
      *
      * @param pw The password to use for the key derivation.
@@ -61,7 +73,7 @@ class LongSloth internal constructor(
      */
     fun hasKey(): Boolean {
         val namespacedStorage = storage.getOrCreateNamespace(identifier)
-        return impl.hasKey(namespacedStorage)
+        return impl.exists(namespacedStorage)
     }
 
     /**

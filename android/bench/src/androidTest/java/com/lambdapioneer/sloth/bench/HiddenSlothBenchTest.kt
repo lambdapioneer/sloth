@@ -86,7 +86,7 @@ class HiddenSlothBenchTest {
         val l = getParameterForDevice("small", getDeviceName())
 
         for (s in maxDataSize) {
-            storage.clearAll()
+            storage.basePath().deleteRecursively()
             internalRunBenchmarkForSize(
                 secureElement = secureElement,
                 pwHashParams = LibSodiumArgon2PwHashParams.OWASP,

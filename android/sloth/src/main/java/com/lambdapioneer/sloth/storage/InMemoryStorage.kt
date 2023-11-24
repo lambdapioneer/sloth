@@ -12,19 +12,35 @@ class InMemoryStorage private constructor(
 
     constructor() : this(namespace = "", data = HashMap())
 
-    override fun put(key: String, value: ByteArray) {
-        val transformedKey = transformKey(key)
-        data[transformedKey] = value
-    }
+    //
+    // ReadableStorage
+    //
 
     override fun get(key: String): ByteArray {
         val transformedKey = transformKey(key)
         return data[transformedKey] ?: throw SlothStorageKeyNotFound()
     }
 
+    //
+    // WriteableStorage
+    //
+
+    override fun put(key: String, value: ByteArray) {
+        val transformedKey = transformKey(key)
+        data[transformedKey] = value
+    }
+
     override fun delete(key: String) {
         data.remove(key)
     }
+
+    override fun updateAllLastModifiedTimestamps() {
+        // no-op for in-memory storage
+    }
+
+    //
+    // NamespaceableStorage
+    //
 
     /**
      * Creates a new [InMemoryStorage] instance with the given name as a sub-namespace of this

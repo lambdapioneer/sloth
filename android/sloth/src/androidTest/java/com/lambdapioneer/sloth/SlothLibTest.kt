@@ -103,7 +103,7 @@ class SlothLibTest {
         hiddenSloth1.removeStorage()
 
         // initialize a storage
-        hiddenSloth1.ensureStorage()
+        hiddenSloth1.onAppStart()
 
         // ensure we can see it from another instance
         val hiddenSloth2 = instance.getHiddenSlothInstance(
@@ -124,7 +124,7 @@ class SlothLibTest {
         assertThat(actual).isEqualTo(data)
 
         // after "re-ensuring" the storage, we can still decrypt
-        hiddenSloth1.ensureStorage()
+        hiddenSloth1.onAppStart()
         val actual2 = hiddenSloth1.decryptFromStorage(pw)
         assertThat(actual2).isEqualTo(data)
 
@@ -139,7 +139,7 @@ class SlothLibTest {
             storage = storage,
             params = params
         )
-        hiddenSloth3.ensureStorage()
+        hiddenSloth3.onAppStart()
         val actual3 = hiddenSloth3.decryptFromStorage(pw)
         assertThat(actual3).isEqualTo(data)
     }

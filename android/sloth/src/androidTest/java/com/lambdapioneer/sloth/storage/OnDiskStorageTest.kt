@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 class OnDiskStorageTest {
@@ -16,7 +17,7 @@ class OnDiskStorageTest {
 
     @Test
     fun testDiskStorage_clearAll() {
-        instance.clearAll()
+        instance.basePath().deleteRecursively()
     }
 
     @Test
@@ -32,7 +33,7 @@ class OnDiskStorageTest {
     fun testDiskStorage_whenPutKeyFollowedByClearAll_thenGetThrows() {
         val value = "hello".toByteArray()
         instance.put("key", value)
-        instance.clearAll()
+        instance.basePath().deleteRecursively()
         instance.get("key")
     }
 
@@ -40,7 +41,7 @@ class OnDiskStorageTest {
     fun testDiskStorage_whenUsingNameSpaces_thenPutAndDeleteVisibleAcrossInstances() {
         val namespace = "test_ondiskstorage_namespace"
 
-        // create a new namespace with tow keys
+        // create a new namespace with two keys
         val instance1 = OnDiskStorage(context)
         val instance1namespaced = instance1.getOrCreateNamespace(namespace)
         instance1namespaced.put("key1", "a".encodeToByteArray())
@@ -77,5 +78,30 @@ class OnDiskStorageTest {
         assertThatExceptionOfType(SlothStorageKeyNotFound::class.java).isThrownBy {
             instance2namespaced.get("key2")
         }
+    }
+
+    @Suppress("LocalVariableName")
+    @Test
+    fun testDiskStorage_whenUpdatingLastModifiedTimestamps_thenAllFilesAreAffected() {
+        val namespace = "test_timestamps"
+
+        val instance = OnDiskStorage(context).getOrCreateNamespace(namespace)
+        instance.put("key1", "a".encodeToByteArray())
+        instance.put("key2", "b".encodeToByteArray())
+
+        val rootBefore = instance.basePath().lastModified()
+        val Key1Before = File(instance.basePath(), "key1").lastModified()
+        val Key2Before = File(instance.basePath(), "key2").lastModified()
+
+        Thread.sleep(1001)
+        instance.updateAllLastModifiedTimestamps()
+
+        val rootAfter = instance.basePath().lastModified()
+        val Key1After = File(instance.basePath(), "key1").lastModified()
+        val Key2After = File(instance.basePath(), "key2").lastModified()
+
+        assertThat(rootAfter).isGreaterThan(rootBefore)
+        assertThat(Key1After).isGreaterThan(Key1Before)
+        assertThat(Key2After).isGreaterThan(Key2Before)
     }
 }

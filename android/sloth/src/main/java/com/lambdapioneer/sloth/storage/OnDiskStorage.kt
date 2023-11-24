@@ -1,6 +1,7 @@
 package com.lambdapioneer.sloth.storage
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import com.lambdapioneer.sloth.SlothStorageKeyNotFound
 import java.io.File
 import java.io.FileNotFoundException
@@ -18,9 +19,9 @@ class OnDiskStorage(
     private val customBasePath: File? = null,
 ) : SlothStorage {
 
-    override fun put(key: String, value: ByteArray) {
-        getFile(key).writeBytes(value)
-    }
+    //
+    // ReadableStorage
+    //
 
     override fun get(key: String): ByteArray {
         try {
@@ -30,9 +31,27 @@ class OnDiskStorage(
         }
     }
 
+    //
+    // WriteableStorage
+    //
+
+    override fun put(key: String, value: ByteArray) {
+        getFile(key).writeBytes(value)
+    }
+
     override fun delete(key: String) {
         getFile(key).delete()
     }
+
+    override fun updateAllLastModifiedTimestamps() {
+        basePath().walkBottomUp().forEach { file ->
+            file.setLastModified(System.currentTimeMillis())
+        }
+    }
+
+    //
+    // NamespaceableStorage
+    //
 
     override fun getOrCreateNamespace(name: String): OnDiskStorage {
         return OnDiskStorage(context = context, customBasePath = File(basePath(), name))
@@ -45,17 +64,8 @@ class OnDiskStorage(
         }
     }
 
-    /**
-     * Deletes all files in the base path.
-     */
-    fun clearAll() {
-        basePath().list()?.forEach { filename ->
-            val f = File(basePath(), filename)
-            f.delete()
-        }
-    }
-
-    private fun basePath(): File = customBasePath ?: defaultBasePath()
+    @VisibleForTesting
+    fun basePath(): File = customBasePath ?: defaultBasePath()
 
     private fun defaultBasePath() = File(context.filesDir, "sloth")
 

@@ -22,22 +22,24 @@ class HiddenSloth internal constructor(
     }
 
     /**
-     * This method checks whether the storage already exists, and creates it if necessary. This must
-     * be called before any other method is being used.
+     * This method should be called on every app start. It ensures that
+     * the storage is initialized and its last-modified timestamps do not
+     * leak usage information.
+     *
+     * This method _must_ be called before any of the encryption or decryption methods.
      */
-    fun ensureStorage() {
+    fun onAppStart() {
+        val namespacedHandle = identifierToHandle(identifier)
         val namespacedStorage = storage.getOrCreateNamespace(identifier)
 
-        if (!hasStorage()) {
-            val namespacedHandle = identifierToHandle(identifier)
-            impl.init(namespacedStorage, namespacedHandle)
-        }
+        impl.onAppStart(storage = namespacedStorage, h = namespacedHandle)
+
         isInitialized = true
     }
 
     /**
      * Indicates whether the storage exists. Checking this should not be necessary and instead
-     * [ensureStorage] should be called on every app start.
+     * [onAppStart] should be called on every app start.
      */
     @VisibleForTesting
     internal fun hasStorage(): Boolean {
@@ -46,9 +48,9 @@ class HiddenSloth internal constructor(
     }
 
     /**
-     * Removes the entire storage. Calling this method should not be neccessary in production apps
-     * as they always should call [ensureStorage] during start-up and not dynamically delete
-     * storage, as this can be an indicator for active usage.
+     * Removes the entire storage. Calling this method should not be necessary in production apps
+     * as they always should call [onAppStart] during start-up and not dynamically delete
+     * storage, as this can be an indicator for active usage (or lack thereof).
      */
     fun removeStorage() {
         storage.deleteNamespace(identifier)
@@ -68,7 +70,7 @@ class HiddenSloth internal constructor(
 
     /**
      * Encrypts the given [data] under the provided [pw] using the [storage] namespaced to
-     * [identifier]. The storage must have been previous initialized using [ensureStorage].
+     * [identifier]. The storage must have been previous initialized using [onAppStart].
      */
     fun encryptToStorage(
         pw: String,

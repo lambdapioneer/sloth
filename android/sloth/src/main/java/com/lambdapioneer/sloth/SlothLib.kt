@@ -13,6 +13,7 @@ import com.lambdapioneer.sloth.impl.LongSlothParams
 import com.lambdapioneer.sloth.secureelement.DefaultSecureElement
 import com.lambdapioneer.sloth.secureelement.SecureElement
 import com.lambdapioneer.sloth.storage.SlothStorage
+import java.time.Duration
 
 /**
  * The main class of the Sloth library that provides the functionality to create and derive keys.
@@ -82,6 +83,15 @@ class SlothLib(private val pwHash: PwHash = Pbkdf2PwHash()) {
             pwHash = pwHash,
         )
         return HiddenSloth(impl = impl, identifier = identifier, storage = storage)
+    }
+
+    /**
+     * Determines the parameter L for the given [targetDuration]. This method is intended to be
+     * used for benchmarking purposes and determining the parameter L for a given device.
+     */
+    fun benchmarkParameter(targetDuration: Duration = Duration.ofSeconds(1)): SlothBenchmarkResult {
+        val slothBenchmark = SlothParameterBenchmark(secureElement = secureElement)
+        return slothBenchmark.determineParameter(targetDuration)
     }
 
     /**

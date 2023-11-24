@@ -24,12 +24,36 @@ import javax.crypto.AEADBadTagException
  * Keys for the values persisted in storage.
  */
 internal enum class HiddenSlothKeys(val key: String) {
-    H_DEMS("hDems"),
-    SE_IV("seIv"),
-    IV("iv"),
+    /**
+     * The handle under which the secret AES key for the outer ciphertext is stored inside the
+     * Secure Element
+     */
+    OUTER_H("outer_h"),
+
+    /**
+     * The IV used for wrapping the outer ciphertext secrets [TK] and [TIV]
+     */
+    OUTER_IV("outer_iv"),
+
+    /**
+     * The encrypted AES key for the outer ciphertext
+     */
     TK("tk"),
-    BLOB("blob"),
+
+    /**
+     * The encrypted AES IV for the outer ciphertext
+     */
     TIV("tiv"),
+
+    /**
+     * The IV used for the inner ciphertext
+     */
+    INNER_IV("iv"),
+
+    /**
+     * The encrypted outer ciphertext which encrypts the inner ciphertext
+     */
+    BLOB("blob"),
 }
 
 @VisibleForTesting
@@ -50,14 +74,27 @@ class HiddenSlothImpl(
         tracer = tracer
     )
 
+    fun onAppStart(storage: WriteableStorage, h: ByteArray) {
+        if (exists(storage)) {
+            // if the storage already exists, we update the last modified timestamps
+            storage.updateAllLastModifiedTimestamps()
+        } else {
+            // if the storage does not exist, we create a new key under a randomly chosen passphrase
+            init(storage, h)
+        }
+
+        val hDess = storage.get(LongSlothKeys.H.key)
+        longSloth.onAppStart(storage, hDess)
+    }
+
     fun init(storage: WriteableStorage, h: ByteArray, tracer: Tracer = NoopTracer()) {
         tracer.start()
 
-        val hDess = h + "_dess".encodeToByteArray()
+        val hDess = h + "dess".toByteArray()
         dessInit(storage, hDess)
 
-        val hDems = h + "_dems".encodeToByteArray()
-        storage.put(H_DEMS.key, hDems)
+        val hDems = h + "dems".toByteArray()
+        storage.put(OUTER_H.key, hDems)
 
         secureElement.aesCtrGenKey(KeyHandle(hDems))
 
@@ -82,7 +119,7 @@ class HiddenSlothImpl(
             throw SlothInconsistentState("Some HiddenSloth files are missing.")
         }
 
-        return exists.any()
+        return true
     }
 
     /**
@@ -122,11 +159,11 @@ class HiddenSlothImpl(
         // a new key inside the secure element referenced under `hDems`.
         //
         val seIv = secureElement.aesCtrGenIv()
-        storage.put(SE_IV.key, seIv)
+        storage.put(OUTER_IV.key, seIv)
 
         // unrolled for loop (the `tags` are part of the cipher text in this implementation)
-        val hDems = KeyHandle(storage.get(H_DEMS.key))
-        storage.put(IV.key, secureElement.aesCtrEncrypt(hDems, seIv, dessEncryptionResult.iv))
+        val hDems = KeyHandle(storage.get(OUTER_H.key))
+        storage.put(INNER_IV.key, secureElement.aesCtrEncrypt(hDems, seIv, dessEncryptionResult.iv))
         storage.put(TK.key, secureElement.aesCtrEncrypt(hDems, seIv, tk))
         storage.put(TIV.key, secureElement.aesCtrEncrypt(hDems, seIv, tiv))
 
@@ -146,8 +183,8 @@ class HiddenSlothImpl(
         //
         // (1) Decrypt the `tk` secret
         //
-        val hDems = KeyHandle(storage.get(H_DEMS.key))
-        val seIv = storage.get(SE_IV.key)
+        val hDems = KeyHandle(storage.get(OUTER_H.key))
+        val seIv = storage.get(OUTER_IV.key)
         val tk = secureElement.aesCtrDecrypt(hDems, seIv, storage.get(TK.key))
 
         //
@@ -161,13 +198,13 @@ class HiddenSlothImpl(
      * the ciphertext.
      */
     fun prepareCachedSecrets(storage: ReadableStorage, pw: String): HiddenSlothCachedSecrets {
-        val hDems = KeyHandle(storage.get(H_DEMS.key))
-        val seIv = storage.get(SE_IV.key)
+        val hDems = KeyHandle(storage.get(OUTER_H.key))
+        val seIv = storage.get(OUTER_IV.key)
 
         //
         // (1) Decrypt the `iv`, `tk` and `tiv` secrets for the outer ciphertext
         //
-        val iv = secureElement.aesCtrDecrypt(hDems, seIv, storage.get(IV.key))
+        val iv = secureElement.aesCtrDecrypt(hDems, seIv, storage.get(INNER_IV.key))
         val tk = secureElement.aesCtrDecrypt(hDems, seIv, storage.get(TK.key))
         val tiv = secureElement.aesCtrDecrypt(hDems, seIv, storage.get(TIV.key))
 
@@ -201,8 +238,8 @@ class HiddenSlothImpl(
 
         tracer.start()
         try {
-            val hDems = KeyHandle(storage.get(H_DEMS.key))
-            val seIv = storage.get(SE_IV.key)
+            val hDems = KeyHandle(storage.get(OUTER_H.key))
+            val seIv = storage.get(OUTER_IV.key)
 
             //
             // (1) Decrypt the `iv`, `tk` and `tiv` secrets for the outer ciphertext
@@ -211,7 +248,7 @@ class HiddenSlothImpl(
             val iv = cachedSecrets?.iv ?: secureElement.aesCtrDecrypt(
                 keyHandle = hDems,
                 iv = seIv,
-                data = storage.get(IV.key)
+                data = storage.get(INNER_IV.key)
             )
             val tk = cachedSecrets?.tk ?: secureElement.aesCtrDecrypt(
                 keyHandle = hDems,
@@ -253,13 +290,13 @@ class HiddenSlothImpl(
     fun ratchet(storage: WriteableStorage, tracer: Tracer = NoopTracer()) {
         tracer.start()
 
-        val hDems = KeyHandle(storage.get(H_DEMS.key))
-        val seIv = storage.get(SE_IV.key)
+        val hDems = KeyHandle(storage.get(OUTER_H.key))
+        val seIv = storage.get(OUTER_IV.key)
 
         //
         // (1) Decrypt the `iv`, `tk` and `tiv` secrets for the outer ciphertext
         //
-        val iv = secureElement.aesCtrDecrypt(hDems, seIv, storage.get(IV.key))
+        val iv = secureElement.aesCtrDecrypt(hDems, seIv, storage.get(INNER_IV.key))
         val tk = secureElement.aesCtrDecrypt(hDems, seIv, storage.get(TK.key))
         val tiv = secureElement.aesCtrDecrypt(hDems, seIv, storage.get(TIV.key))
 
@@ -287,9 +324,13 @@ class HiddenSlothImpl(
         // fresh key inside the secure element.
         //
         secureElement.aesCtrGenKey(hDems)
-        storage.put(IV.key, secureElement.aesCtrEncrypt(hDems, seIv, iv))
-        storage.put(TK.key, secureElement.aesCtrEncrypt(hDems, seIv, newTk))
-        storage.put(TIV.key, secureElement.aesCtrEncrypt(hDems, seIv, newTiv))
+
+        val newSeIv = secureElement.aesCtrGenIv()
+        storage.put(OUTER_IV.key, newSeIv)
+
+        storage.put(INNER_IV.key, secureElement.aesCtrEncrypt(hDems, newSeIv, iv))
+        storage.put(TK.key, secureElement.aesCtrEncrypt(hDems, newSeIv, newTk))
+        storage.put(TIV.key, secureElement.aesCtrEncrypt(hDems, newSeIv, newTiv))
 
         tracer.finish()
     }

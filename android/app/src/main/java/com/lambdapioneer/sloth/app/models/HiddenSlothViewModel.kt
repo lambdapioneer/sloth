@@ -33,7 +33,7 @@ class HiddenSlothViewModel(
 
     fun ensure() {
         runLongTaskInBackground {
-            hiddenSloth.ensureStorage()
+            hiddenSloth.onAppStart()
         }
     }
 

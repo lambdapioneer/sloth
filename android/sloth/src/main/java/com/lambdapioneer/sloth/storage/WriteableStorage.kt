@@ -16,4 +16,9 @@ interface WriteableStorage : ReadableStorage {
      * Removes the given key from storage.
      */
     fun delete(key: String)
+
+    /**
+     * Updates the last-modified timestamp for this item and all its keys.
+     */
+    fun updateAllLastModifiedTimestamps()
 }
