@@ -47,19 +47,21 @@ Below is a complete example of how to create and use a LongSloth instance.
 val slothLib = SlothLib()
 slothLib.init() // This will throw if e.g. there is no secure element available.
 
+val storage = OnDiskStorage(context) // you can implement your own storage abstraction
+
 // Context-level preparation
 val longSloth = instance.getLongSlothInstance(
     identifier = "your_identifier",
+    storage = storage,
     params = LongSlothParams()
 )
-val storage = OnDiskStorage(context)
 
 // Create a new key (will override any keys under that identifier)
-val key = longSloth.createNewKey("passphrase", storage)
+val key = longSloth.createNewKey("passphrase")
 
 // Derive a key from the passphrase (assuming `createNewKey`
 // was called before for this identifier)
-val key = longSloth.deriveForExistingKey(pw, storage)
+val key = longSloth.deriveForExistingKey("passphrase")
 ```
 
 
@@ -77,23 +79,25 @@ Below is a complete example of how to create and use a HiddenSloth instance.
 val slothLib = SlothLib()
 slothLib.init() // This will throw if e.g. there is no secure element available.
 
+val storage = OnDiskStorage(context) // you can implement your own storage abstraction
+
 // Execute the following at _every_ app start.
 val hiddenSloth = instance.getHiddenSlothInstance(
     identifier = "your_identifier",
+    storage = storage,
     params = HiddenSlothParams(storageTotalSize = 1 * MIB)
 )
-val storage = OnDiskStorage(context)
-hiddenSloth.ensureStorage(storage)
+hiddenSloth.ensureStorage()
 
 // Optionally execute the following on every app start to ensure multi-snapshot security
-hiddenSloth.ratchet(storage)
+hiddenSloth.ratchet()
 
 // Store data in the HiddenSloth instance
 val data: ByteArray = ...
-hiddenSloth.encryptToStorage("passphrase", data, storage)
+hiddenSloth.encryptToStorage("passphrase", data)
 
 // Retrieve data from the HiddenSloth instance
-val data = hiddenSloth1.decryptFromStorage("passphrase", storage)
+val data = hiddenSloth1.decryptFromStorage("passphrase")
 ```
 
 

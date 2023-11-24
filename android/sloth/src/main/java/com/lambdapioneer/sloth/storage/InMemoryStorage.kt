@@ -8,7 +8,7 @@ import com.lambdapioneer.sloth.SlothStorageKeyNotFound
 class InMemoryStorage private constructor(
     private val namespace: String,
     private val data: HashMap<String, ByteArray>,
-) : ReadableStorage, WriteableStorage, NamespaceableStorage<InMemoryStorage> {
+) : SlothStorage {
 
     constructor() : this(namespace = "", data = HashMap())
 

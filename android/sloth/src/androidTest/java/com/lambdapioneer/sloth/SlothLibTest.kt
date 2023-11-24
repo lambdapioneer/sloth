@@ -39,42 +39,44 @@ class SlothLibTest {
         val identifier1 = "longsloth_test_1"
         val longSloth1 = instance.getLongSlothInstance(
             identifier = identifier1,
+            storage = storage,
             params = LongSlothParams()
         )
 
         // create a key and verify that re-deriving results in the same key
-        val key1a = longSloth1.createNewKey(pw, storage)
-        val key1b = longSloth1.deriveForExistingKey(pw, storage)
+        val key1a = longSloth1.createNewKey(pw)
+        val key1b = longSloth1.deriveForExistingKey(pw)
         assertThat(key1a).isEqualTo(key1b)
 
         // create a key under a different namespace and verify it is different
         val identifier2 = "longsloth_test_2"
         val longSloth2 = instance.getLongSlothInstance(
             identifier = identifier2,
+            storage = storage,
             params = LongSlothParams()
         )
 
-        val key2 = longSloth2.createNewKey(pw, storage)
+        val key2 = longSloth2.createNewKey(pw)
         assertThat(key1a).isNotEqualTo(key2)
 
         // verify the original key still derives correctly
-        val key1c = longSloth1.deriveForExistingKey(pw, storage)
+        val key1c = longSloth1.deriveForExistingKey(pw)
         assertThat(key1a).isEqualTo(key1c)
 
         // reset the key and verify that this results in a different key
-        val key1d = longSloth1.createNewKey(pw, storage)
+        val key1d = longSloth1.createNewKey(pw)
         assertThat(key1d).isNotEqualTo(key1a)
 
         // check that the key exists
-        assertThat(longSloth1.hasKey(storage)).isEqualTo(true)
+        assertThat(longSloth1.hasKey()).isEqualTo(true)
 
         // remove
-        longSloth1.deleteKey(storage)
-        assertThat(longSloth1.hasKey(storage)).isEqualTo(false)
+        longSloth1.deleteKey()
+        assertThat(longSloth1.hasKey()).isEqualTo(false)
 
         // verify that re-deriving fails
         try {
-            longSloth1.deriveForExistingKey(pw, storage)
+            longSloth1.deriveForExistingKey(pw)
             throw AssertionError("Expected IllegalStateException")
         } catch (e: SlothStorageKeyNotFound) {
             // expected
@@ -91,42 +93,54 @@ class SlothLibTest {
 
         // create a HiddenSloth instance
         val params = HiddenSlothParams(storageTotalSize = 1 * MIB)
-        val hiddenSloth1 = instance.getHiddenSlothInstance("hidden_sloth_test", params)
+        val hiddenSloth1 = instance.getHiddenSlothInstance(
+            identifier = "hidden_sloth_test",
+            storage = storage,
+            params = params
+        )
 
         // clear existing storage (if it exists)
-        hiddenSloth1.removeStorage(storage)
+        hiddenSloth1.removeStorage()
 
         // initialize a storage
-        hiddenSloth1.ensureStorage(storage)
+        hiddenSloth1.ensureStorage()
 
         // ensure we can see it from another instance
-        val hiddenSloth2 = instance.getHiddenSlothInstance("hidden_sloth_test", params)
-        hiddenSloth2.hasStorage(storage)
+        val hiddenSloth2 = instance.getHiddenSlothInstance(
+            identifier = "hidden_sloth_test",
+            storage = storage,
+            params = params
+        )
+        hiddenSloth2.hasStorage()
 
         // encrypt data under passphrase
-        hiddenSloth1.encryptToStorage(pw, data, storage)
+        hiddenSloth1.encryptToStorage(pw, data)
 
         // ratchet once
-        hiddenSloth1.ratchet(storage)
+        hiddenSloth1.ratchet()
 
         // decrypts under the same passphrase
-        val actual = hiddenSloth1.decryptFromStorage(pw, storage)
+        val actual = hiddenSloth1.decryptFromStorage(pw)
         assertThat(actual).isEqualTo(data)
 
         // after "re-ensuring" the storage, we can still decrypt
-        hiddenSloth1.ensureStorage(storage)
-        val actual2 = hiddenSloth1.decryptFromStorage(pw, storage)
+        hiddenSloth1.ensureStorage()
+        val actual2 = hiddenSloth1.decryptFromStorage(pw)
         assertThat(actual2).isEqualTo(data)
 
         // does not decrypt under a different passphrase
         assertThatExceptionOfType(SlothDecryptionFailed::class.java).isThrownBy {
-            hiddenSloth1.decryptFromStorage("wrong passphrase", storage)
+            hiddenSloth1.decryptFromStorage("wrong passphrase")
         }
 
         // decrypts from another instance
-        val hiddenSloth3 = instance.getHiddenSlothInstance("hidden_sloth_test", params)
-        hiddenSloth3.ensureStorage(storage)
-        val actual3 = hiddenSloth3.decryptFromStorage(pw, storage)
+        val hiddenSloth3 = instance.getHiddenSlothInstance(
+            identifier = "hidden_sloth_test",
+            storage = storage,
+            params = params
+        )
+        hiddenSloth3.ensureStorage()
+        val actual3 = hiddenSloth3.decryptFromStorage(pw)
         assertThat(actual3).isEqualTo(data)
     }
 
@@ -138,5 +152,4 @@ class SlothLibTest {
 
         return instance
     }
-
 }

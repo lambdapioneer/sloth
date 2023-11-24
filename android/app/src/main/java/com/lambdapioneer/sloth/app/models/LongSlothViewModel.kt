@@ -23,18 +23,19 @@ class LongSlothViewModel(
 
     private val longSloth = slothLib.getLongSlothInstance(
         identifier = "test",
+        storage = storage,
         params = LongSlothParams(l = 100_000)
     )
 
     fun generateKey(password: String) {
         runLongTaskInBackground {
-            key.value = longSloth.createNewKey(pw = password, storage = storage)
+            key.value = longSloth.createNewKey(pw = password)
         }
     }
 
     fun deriveKey(password: String) {
         runLongTaskInBackground {
-            key.value = longSloth.deriveForExistingKey(pw = password, storage = storage)
+            key.value = longSloth.deriveForExistingKey(pw = password)
         }
     }
 

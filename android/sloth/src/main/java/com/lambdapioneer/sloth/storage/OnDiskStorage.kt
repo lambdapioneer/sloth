@@ -16,7 +16,7 @@ import java.io.FileNotFoundException
 class OnDiskStorage(
     private val context: Context,
     private val customBasePath: File? = null,
-) : ReadableStorage, WriteableStorage, NamespaceableStorage<OnDiskStorage> {
+) : SlothStorage {
 
     override fun put(key: String, value: ByteArray) {
         getFile(key).writeBytes(value)

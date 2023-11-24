@@ -12,6 +12,7 @@ import com.lambdapioneer.sloth.impl.LongSlothImpl
 import com.lambdapioneer.sloth.impl.LongSlothParams
 import com.lambdapioneer.sloth.secureelement.DefaultSecureElement
 import com.lambdapioneer.sloth.secureelement.SecureElement
+import com.lambdapioneer.sloth.storage.SlothStorage
 
 /**
  * The main class of the Sloth library that provides the functionality to create and derive keys.
@@ -48,10 +49,13 @@ class SlothLib(private val pwHash: PwHash = Pbkdf2PwHash()) {
     }
 
     /**
-     * Creates a new instance of [LongSloth] for the given [identifier] and [params].
+     * Creates a new instance of [LongSloth] for the given [identifier] and [params]. This instance
+     * will use the provided [storage] for all operations which will be namespaced inside based
+     * on the [identifier].
      */
     fun getLongSlothInstance(
         identifier: String,
+        storage: SlothStorage,
         params: LongSlothParams,
     ): LongSloth {
         val impl = LongSlothImpl(
@@ -59,14 +63,17 @@ class SlothLib(private val pwHash: PwHash = Pbkdf2PwHash()) {
             secureElement = secureElement,
             pwHash = pwHash,
         )
-        return LongSloth(impl = impl, identifier = identifier)
+        return LongSloth(impl = impl, identifier = identifier, storage = storage)
     }
 
     /**
-     * Creates a new instance of [HiddenSloth] for the given [identifier] and [params].
+     * Creates a new instance of [HiddenSloth] for the given [identifier] and [params]. This
+     * instance will use the provided [storage] for all operations which will be namespaced inside
+     * based ogn the [identifier].
      */
     fun getHiddenSlothInstance(
         identifier: String,
+        storage: SlothStorage,
         params: HiddenSlothParams,
     ): HiddenSloth {
         val impl = HiddenSlothImpl(
@@ -74,7 +81,7 @@ class SlothLib(private val pwHash: PwHash = Pbkdf2PwHash()) {
             secureElement = secureElement,
             pwHash = pwHash,
         )
-        return HiddenSloth(impl = impl, identifier = identifier)
+        return HiddenSloth(impl = impl, identifier = identifier, storage = storage)
     }
 
     /**

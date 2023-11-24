@@ -6,14 +6,13 @@ import androidx.annotation.VisibleForTesting
 import com.lambdapioneer.sloth.impl.HiddenSlothCachedSecrets
 import com.lambdapioneer.sloth.impl.HiddenSlothImpl
 import com.lambdapioneer.sloth.impl.OffsetAndLength
-import com.lambdapioneer.sloth.storage.NamespaceableStorage
-import com.lambdapioneer.sloth.storage.ReadableStorage
-import com.lambdapioneer.sloth.storage.WriteableStorage
+import com.lambdapioneer.sloth.storage.SlothStorage
 import javax.crypto.AEADBadTagException
 
 @RequiresApi(Build.VERSION_CODES.P)
 class HiddenSloth internal constructor(
     private val impl: HiddenSlothImpl,
+    private val storage: SlothStorage,
     private val identifier: String,
 ) {
     private var isInitialized = false
@@ -26,12 +25,10 @@ class HiddenSloth internal constructor(
      * This method checks whether the storage already exists, and creates it if necessary. This must
      * be called before any other method is being used.
      */
-    fun <STORAGE> ensureStorage(
-        storage: STORAGE,
-    ) where STORAGE : WriteableStorage, STORAGE : NamespaceableStorage<STORAGE> {
+    fun ensureStorage() {
         val namespacedStorage = storage.getOrCreateNamespace(identifier)
 
-        if (!hasStorage(storage)) {
+        if (!hasStorage()) {
             val namespacedHandle = identifierToHandle(identifier)
             impl.init(namespacedStorage, namespacedHandle)
         }
@@ -43,9 +40,7 @@ class HiddenSloth internal constructor(
      * [ensureStorage] should be called on every app start.
      */
     @VisibleForTesting
-    internal fun <STORAGE> hasStorage(
-        storage: STORAGE,
-    ): Boolean where STORAGE : ReadableStorage, STORAGE : NamespaceableStorage<STORAGE> {
+    internal fun hasStorage(): Boolean {
         val namespacedStorage = storage.getOrCreateNamespace(identifier)
         return impl.exists(namespacedStorage)
     }
@@ -55,9 +50,7 @@ class HiddenSloth internal constructor(
      * as they always should call [ensureStorage] during start-up and not dynamically delete
      * storage, as this can be an indicator for active usage.
      */
-    fun <STORAGE> removeStorage(
-        storage: STORAGE,
-    ) where STORAGE : WriteableStorage, STORAGE : NamespaceableStorage<STORAGE> {
+    fun removeStorage() {
         storage.deleteNamespace(identifier)
     }
 
@@ -66,9 +59,7 @@ class HiddenSloth internal constructor(
      * between each opportunity where the adversary can capture a snapshot to ensure
      * multi-snapshot resistance. For single-snapshot threat models this method is not required.
      */
-    fun <STORAGE> ratchet(
-        storage: STORAGE,
-    ) where STORAGE : WriteableStorage, STORAGE : NamespaceableStorage<STORAGE> {
+    fun ratchet() {
         check(isInitialized)
         val namespacedStorage = storage.getOrCreateNamespace(identifier)
 
@@ -79,11 +70,10 @@ class HiddenSloth internal constructor(
      * Encrypts the given [data] under the provided [pw] using the [storage] namespaced to
      * [identifier]. The storage must have been previous initialized using [ensureStorage].
      */
-    fun <STORAGE> encryptToStorage(
+    fun encryptToStorage(
         pw: String,
         data: ByteArray,
-        storage: STORAGE,
-    ) where STORAGE : WriteableStorage, STORAGE : NamespaceableStorage<STORAGE> {
+    ) {
         check(isInitialized)
         val namespacedStorage = storage.getOrCreateNamespace(identifier)
 
@@ -97,10 +87,9 @@ class HiddenSloth internal constructor(
      * Note that failure to decrypt can mean that (a) no data was ever encrypted,
      * (b) the password is wrong, or (c) the storage has been tampered with.
      */
-    fun <STORAGE> decryptFromStorage(
+    fun decryptFromStorage(
         pw: String,
-        storage: STORAGE,
-    ): ByteArray where STORAGE : ReadableStorage, STORAGE : NamespaceableStorage<STORAGE> {
+    ): ByteArray {
         check(isInitialized)
         val namespacedStorage = storage.getOrCreateNamespace(identifier)
 
@@ -114,11 +103,10 @@ class HiddenSloth internal constructor(
         }
     }
 
-    fun <STORAGE> computeCachedSecrets(
+    fun computeCachedSecrets(
         pw: String,
-        storage: STORAGE,
         authenticateStorage: Boolean = true,
-    ): HiddenSlothCachedSecrets where STORAGE : ReadableStorage, STORAGE : NamespaceableStorage<STORAGE> {
+    ): HiddenSlothCachedSecrets {
         check(isInitialized)
         val namespacedStorage = storage.getOrCreateNamespace(identifier)
 
@@ -146,13 +134,12 @@ class HiddenSloth internal constructor(
      * If [decryptionOffsetAndLength] is provided, only the ciphertext in the range specified by
      * [decryptionOffsetAndLength] is decrypted. Note that in this case the decryption is not
      * authenticated.The offset and length must be aligned at AES block boundaries (16 bytes).
-     * However, it will have been authenticated beforehand when calling [hiddenSlothCacheSecrets].
+     * However, it will have been authenticated beforehand when calling [computeCachedSecrets].
      */
-    fun <STORAGE> decryptFromStorageWithCachedSecrets(
+    fun decryptFromStorageWithCachedSecrets(
         cachedSecrets: HiddenSlothCachedSecrets,
-        storage: STORAGE,
         decryptionOffsetAndLength: OffsetAndLength? = null,
-    ): ByteArray where STORAGE : ReadableStorage, STORAGE : NamespaceableStorage<STORAGE> {
+    ): ByteArray {
         check(isInitialized)
         val namespacedStorage = storage.getOrCreateNamespace(identifier)
 

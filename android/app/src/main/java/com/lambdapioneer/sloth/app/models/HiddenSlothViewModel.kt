@@ -9,6 +9,7 @@ import com.lambdapioneer.sloth.SlothLib
 import com.lambdapioneer.sloth.app.SampleApplication
 import com.lambdapioneer.sloth.impl.HiddenSlothParams
 import com.lambdapioneer.sloth.impl.LongSlothParams
+
 import com.lambdapioneer.sloth.storage.OnDiskStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +17,7 @@ import kotlinx.coroutines.launch
 
 class HiddenSlothViewModel(
     slothLib: SlothLib,
-    private val storage: OnDiskStorage,
+    storage: OnDiskStorage,
 ) : ViewModel() {
     val output = MutableStateFlow<String?>(null)
     val busy = MutableStateFlow(false)
@@ -24,6 +25,7 @@ class HiddenSlothViewModel(
 
     private val hiddenSloth = slothLib.getHiddenSlothInstance(
         identifier = "test",
+        storage = storage,
         params = HiddenSlothParams(
             storageTotalSize = 32 * 1024,
             longSlothParams = LongSlothParams(l = 10_000)
@@ -32,13 +34,13 @@ class HiddenSlothViewModel(
 
     fun ensure() {
         runLongTaskInBackground {
-            hiddenSloth.ensureStorage(storage = storage)
+            hiddenSloth.ensureStorage()
         }
     }
 
     fun ratchet() {
         runLongTaskInBackground {
-            hiddenSloth.ratchet(storage = storage)
+            hiddenSloth.ratchet()
         }
     }
 
@@ -47,7 +49,6 @@ class HiddenSlothViewModel(
             hiddenSloth.encryptToStorage(
                 pw = password,
                 data = content.encodeToByteArray(),
-                storage = storage
             )
         }
     }
@@ -56,7 +57,6 @@ class HiddenSlothViewModel(
         runLongTaskInBackground {
             this.output.value = hiddenSloth.decryptFromStorage(
                 pw = password,
-                storage = storage
             ).decodeToString()
         }
     }
