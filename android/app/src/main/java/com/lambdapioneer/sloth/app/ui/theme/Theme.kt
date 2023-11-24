@@ -12,7 +12,7 @@ fun SlothTheme(
         colorScheme = lightColorScheme(
             primary = Teal,
             secondary = LightTeal,
-            tertiary = AlternativeTeal
+            tertiary = AlternativeTeal,
         ),
         content = content
     )

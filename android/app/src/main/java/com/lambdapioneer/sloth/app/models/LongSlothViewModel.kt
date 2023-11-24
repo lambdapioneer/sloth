@@ -1,4 +1,4 @@
-package com.lambdapioneer.sloth.app
+package com.lambdapioneer.sloth.app.models
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -6,12 +6,14 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.lambdapioneer.sloth.SlothLib
+import com.lambdapioneer.sloth.app.SampleApplication
 import com.lambdapioneer.sloth.impl.LongSlothParams
 import com.lambdapioneer.sloth.storage.OnDiskStorage
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class MainViewModel(
+class LongSlothViewModel(
     slothLib: SlothLib,
     private val storage: OnDiskStorage,
 ) : ViewModel() {
@@ -21,34 +23,34 @@ class MainViewModel(
 
     private val longSloth = slothLib.getLongSlothInstance(
         identifier = "test",
-        params = LongSlothParams()
+        params = LongSlothParams(l = 100_000)
     )
 
     fun generateKey(password: String) {
-        viewModelScope.launch {
-            busy.value = true
-            try {
-                key.value  = longSloth.createNewKey(pw = password, storage = storage)
-                error.value = null
-            } catch (e: Exception) {
-                e.printStackTrace()
-                error.value = e.toString()
-            }
-            busy.value = false
+        runLongTaskInBackground {
+            key.value = longSloth.createNewKey(pw = password, storage = storage)
         }
     }
 
     fun deriveKey(password: String) {
+        runLongTaskInBackground {
+            key.value = longSloth.deriveForExistingKey(pw = password, storage = storage)
+        }
+    }
+
+    private fun runLongTaskInBackground(block: () -> Unit) {
+        busy.value = true
         viewModelScope.launch {
-            busy.value = true
-            try {
-                key.value= longSloth.deriveForExistingKey(pw = password, storage = storage)
-                error.value = null
-            } catch (e: Exception) {
-                e.printStackTrace()
-                error.value = e.message
+            launch(Dispatchers.Default) {
+                try {
+                    block()
+                    error.value = null
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    error.value = e.toString()
+                }
+                busy.value = false
             }
-            busy.value = false
         }
     }
 
@@ -60,7 +62,7 @@ class MainViewModel(
                 extras: CreationExtras,
             ): T {
                 val application = checkNotNull(extras[APPLICATION_KEY]) as SampleApplication
-                return MainViewModel(
+                return LongSlothViewModel(
                     slothLib = application.getSlothLib(),
                     storage = OnDiskStorage(application)
                 ) as T

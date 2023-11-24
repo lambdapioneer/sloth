@@ -1,4 +1,4 @@
-package com.lambdapioneer.sloth.app
+package com.lambdapioneer.sloth.app.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -19,49 +20,59 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.lambdapioneer.sloth.app.models.HiddenSlothViewModel
 import com.lambdapioneer.sloth.app.ui.theme.ErrorRed
 import com.lambdapioneer.sloth.app.ui.theme.SlothTheme
 import com.lambdapioneer.sloth.app.ui.theme.Teal
 
 @Composable
-internal fun MainScreen(model: MainViewModel) {
+internal fun HiddenSlothScreen(model: HiddenSlothViewModel) {
     var password by remember { mutableStateOf("test") }
-    val key = model.key.collectAsState().value
+    var content by remember { mutableStateOf("Demo Content") }
+    val output = model.output.collectAsState().value
     val busy = model.busy.collectAsState().value
     val error = model.error.collectAsState().value
 
-    MainScreenContent(
+    HiddenSlothScreenContent(
         password = password,
-        key = key,
+        content = content,
+        output = output,
         busy = busy,
         error = error,
         onPasswordChange = { password = it },
-        onGenerateKey = { model.generateKey(it) },
-        onReDeriveKey = { model.deriveKey(it) },
+        onContentChange = { content = it },
+        onEnsure = { model.ensure() },
+        onRatchet = { model.ratchet() },
+        onStore = { model.store(password, content) },
+        onLoad = { model.load(password) }
     )
 }
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun MainScreenContent(
+private fun HiddenSlothScreenContent(
     password: String,
-    key: ByteArray?,
-    busy: Boolean = false,
-    error: String? = null,
-    onPasswordChange: (String) -> Unit = {},
-    onGenerateKey: (String) -> Unit = {},
-    onReDeriveKey: (String) -> Unit = {},
+    content: String,
+    output: String?,
+    busy: Boolean,
+    error: String?,
+    onPasswordChange: (String) -> Unit = { },
+    onContentChange: (String) -> Unit = { },
+    onEnsure: () -> Unit = { },
+    onRatchet: () -> Unit = { },
+    onStore: () -> Unit = { },
+    onLoad: () -> Unit = { },
 ) {
     SlothTheme {
         Column {
             TopAppBar(
-                title = { Text("\uD83E\uDDA5 " + stringResource(id = R.string.app_name)) },
+                title = { Text("\uD83E\uDDA5 HiddenSloth") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Teal,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
@@ -71,14 +82,18 @@ private fun MainScreenContent(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background,
             ) {
-                MainContent(
+                HiddenSlothMainContent(
                     password = password,
-                    key = key,
+                    content = content,
+                    output = output,
                     busy = busy,
                     error = error,
                     onPasswordChange = onPasswordChange,
-                    onGenerateKey = onGenerateKey,
-                    onReDeriveKey = onReDeriveKey
+                    onContentChange = onContentChange,
+                    onEnsure = onEnsure,
+                    onRatchet = onRatchet,
+                    onStore = onStore,
+                    onLoad = onLoad
                 )
             }
         }
@@ -86,14 +101,18 @@ private fun MainScreenContent(
 }
 
 @Composable
-fun MainContent(
+fun HiddenSlothMainContent(
     password: String,
-    key: ByteArray?,
-    busy: Boolean = false,
+    content: String,
+    output: String?,
+    busy: Boolean,
     error: String?,
     onPasswordChange: (String) -> Unit,
-    onGenerateKey: (String) -> Unit,
-    onReDeriveKey: (String) -> Unit,
+    onContentChange: (String) -> Unit,
+    onEnsure: () -> Unit,
+    onRatchet: () -> Unit,
+    onStore: () -> Unit,
+    onLoad: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -101,15 +120,8 @@ fun MainContent(
             .padding(16.dp),
     ) {
         Text(
-            text = "Simple demo for creating new LongSloth keys and re-deriving them afterwards.",
+            text = "Simple demo for storing and retrieving data with HiddenSloth. In this demo ensureStorage() is not called automatically",
             modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        TextField(
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("Password") },
-            value = password,
-            onValueChange = onPasswordChange,
         )
 
         Row(
@@ -122,16 +134,55 @@ fun MainContent(
                     .weight(1f)
                     .padding(end = 8.dp),
                 enabled = !busy,
-                onClick = { onGenerateKey(password) }
+                onClick = { onEnsure() }
             ) {
-                Text("Create new key")
+                Text("Ensure storage")
             }
             Button(
                 modifier = Modifier.weight(1f),
                 enabled = !busy,
-                onClick = { onReDeriveKey(password) }
+                onClick = { onRatchet() }
             ) {
-                Text("Re-derive key")
+                Text("Ratchet storage")
+            }
+        }
+
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Password") },
+            value = password,
+            onValueChange = onPasswordChange,
+        )
+
+        TextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            label = { Text("Content") },
+            value = content,
+            onValueChange = onContentChange,
+        )
+
+        Row(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth()
+        ) {
+            Button(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 8.dp),
+                enabled = !busy,
+                onClick = { onStore() }
+            ) {
+                Text("Store content")
+            }
+            Button(
+                modifier = Modifier.weight(1f),
+                enabled = !busy,
+                onClick = { onLoad() }
+            ) {
+                Text("Load content")
             }
         }
 
@@ -144,36 +195,58 @@ fun MainContent(
             )
         } else {
             Text(
-                text = "Derived key:",
+                text = "Retrieved content:",
                 modifier = Modifier.padding(top = 8.dp),
             )
             Text(
-                text = key?.encodeAsHex() ?: "<empty>",
+                text = output ?: "<empty>",
                 fontFamily = FontFamily.Monospace,
                 modifier = Modifier.padding(top = 8.dp),
+            )
+        }
+
+        if (busy) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .padding(top = 32.dp)
+                    .align(Alignment.CenterHorizontally)
             )
         }
     }
 }
 
-private fun ByteArray.encodeAsHex(): String {
-    return this.joinToString(",") { String.format("%02x", it) }
+@Preview(showBackground = true, device = Devices.PIXEL_2)
+@Composable
+fun HiddenSlothScreenPreview_empty() {
+    HiddenSlothScreenContent(
+        password = "",
+        content = "",
+        output = null,
+        busy = false,
+        error = null,
+    )
 }
 
 @Preview(showBackground = true, device = Devices.PIXEL_2)
 @Composable
-fun MainScreenPreview_empty() {
-    MainScreenContent("", null)
+fun HiddenSlothScreenPreview_withEntriesBusy() {
+    HiddenSlothScreenContent(
+        password = "test",
+        content = "Demo Content",
+        output = "Demo Content",
+        busy = true,
+        error = null,
+    )
 }
 
 @Preview(showBackground = true, device = Devices.PIXEL_2)
 @Composable
-fun MainScreenPreview_withEntries() {
-    MainScreenContent("p4ssw0rd$", byteArrayOf(0x42, 0x13, 0x37))
-}
-
-@Preview(showBackground = true, device = Devices.PIXEL_2)
-@Composable
-fun MainScreenPreview_error() {
-    MainScreenContent("something", null, error = "Something went wrong")
+fun HiddenSlothScreenPreview_error() {
+    HiddenSlothScreenContent(
+        password = "test",
+        content = "Demo Content",
+        output = "Demo Content",
+        busy = false,
+        error = "Something went wrong...",
+    )
 }

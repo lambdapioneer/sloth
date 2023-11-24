@@ -7,8 +7,21 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.Sloth">
         <activity
-            android:name=".MainActivity"
+            android:name=".LongSlothActivity"
             android:exported="true"
+            android:label="LongSloth"
+            android:taskAffinity=".LongSlothActivity"
+            android:theme="@style/Theme.Sloth">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".HiddenSlothActivity"
+            android:exported="true"
+            android:label="HiddenSloth"
+            android:taskAffinity=".HiddenSlothActivity"
             android:theme="@style/Theme.Sloth">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

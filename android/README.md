@@ -152,7 +152,7 @@ It shows how to integrate the `SlothLib` into a modern app build using ViewModel
 The app allows to creating new LongSloth keys and re-deriving them.
 By default the app builds against the local `:sloth` and `:sloth-pwhash-libsodium` modules.
 
-![Screenshot of the app](app/docs/screenshot_framed.png)
+![Screenshot of the LongSloth activity](app/docs/screenshot-long-sloth-25p.png)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![Screenshot of the HiddenSloth activity](app/docs/screenshot-hidden-sloth-25p.png)
 
 You can install it on a device or emulator by running `./gradlew :app:installDebug` from the root directory.
 Note that emulators do not have a secure element and thus the app will start, but not work on them.
