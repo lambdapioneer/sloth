@@ -1,6 +1,6 @@
 [versions]
 compilesdk = "34"
-minsdk = "28"
+minsdk = "26"
 
 activity-compose = "1.8.0"
 agp = "8.1.1"

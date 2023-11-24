@@ -2,7 +2,7 @@
 
 We have implemented both **LongSloth** and (multi-snapshot) **HiddenSloth** for Android.
 These are provided as a carefully crafted library that can be included in any Android app.
-All modules require the minimum SDK version 28+.
+All modules require the minimum SDK version 26+.
 The main library including all Sloth variants is implemented in the `:sloth` module.
 
 
