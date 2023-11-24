@@ -1,6 +1,6 @@
 # 🦥 Sloth: Key Stretching and Deniable Encryption using Secure Elements on Smartphones
 
-This repository contains the code and analysis scripts for the [Sloth paper]() (not yet published).
+This repository contains the code and analysis scripts for the [Sloth paper](https://eprint.iacr.org/2023/1792.pdf) (pre-print).
 Sloth describes a set of cryptographic protocols that leverage the Secure Element (SE) of smartphones for key stretching and deniable encryption.
 
 In particular, this repository provides the following:
@@ -44,4 +44,13 @@ See the individual `README.md` files in the respective folders for more informat
 
 ## Bibtex 📚
 
-TBD once published.
+```bibtex
+@misc{cryptoeprint:2023/1792,
+      author = {Daniel Hugenroth and Alberto Sonnino and Sam Cutler and Alastair R. Beresford},
+      title = {Sloth: Key Stretching and Deniable Encryption using Secure Elements on Smartphones},
+      howpublished = {Cryptology ePrint Archive, Paper 2023/1792},
+      year = {2023},
+      note = {\url{https://eprint.iacr.org/2023/1792}},
+      url = {https://eprint.iacr.org/2023/1792}
+}
+```
