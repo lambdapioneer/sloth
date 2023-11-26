@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +36,7 @@ import com.lambdapioneer.sloth.app.ui.theme.Teal
 internal fun HiddenSlothScreen(model: HiddenSlothViewModel) {
     var password by remember { mutableStateOf("test") }
     var content by remember { mutableStateOf("Demo Content") }
+    var useCachedSecrets by remember { mutableStateOf(false) }
     val output = model.output.collectAsState().value
     val busy = model.busy.collectAsState().value
     val error = model.error.collectAsState().value
@@ -42,15 +44,23 @@ internal fun HiddenSlothScreen(model: HiddenSlothViewModel) {
     HiddenSlothScreenContent(
         password = password,
         content = content,
+        useCachedSecrets = useCachedSecrets,
         output = output,
         busy = busy,
         error = error,
         onPasswordChange = { password = it },
         onContentChange = { content = it },
+        onUseCachedSecretsChange = { useCachedSecrets = it },
         onEnsure = { model.ensure() },
         onRatchet = { model.ratchet() },
-        onStore = { model.store(password, content) },
-        onLoad = { model.load(password) }
+        onStore = {
+            model.store(
+                password = password,
+                content = content,
+                useCachedSecrets = useCachedSecrets
+            )
+        },
+        onLoad = { model.load(password = password, useCachedSecrets = useCachedSecrets) }
     )
 }
 
@@ -59,11 +69,13 @@ internal fun HiddenSlothScreen(model: HiddenSlothViewModel) {
 private fun HiddenSlothScreenContent(
     password: String,
     content: String,
+    useCachedSecrets: Boolean,
     output: String?,
     busy: Boolean,
     error: String?,
     onPasswordChange: (String) -> Unit = { },
     onContentChange: (String) -> Unit = { },
+    onUseCachedSecretsChange: (Boolean) -> Unit = { },
     onEnsure: () -> Unit = { },
     onRatchet: () -> Unit = { },
     onStore: () -> Unit = { },
@@ -85,11 +97,13 @@ private fun HiddenSlothScreenContent(
                 HiddenSlothMainContent(
                     password = password,
                     content = content,
+                    useCachedSecrets = useCachedSecrets,
                     output = output,
                     busy = busy,
                     error = error,
                     onPasswordChange = onPasswordChange,
                     onContentChange = onContentChange,
+                    onUseCachedSecretsChange = onUseCachedSecretsChange,
                     onEnsure = onEnsure,
                     onRatchet = onRatchet,
                     onStore = onStore,
@@ -104,11 +118,13 @@ private fun HiddenSlothScreenContent(
 fun HiddenSlothMainContent(
     password: String,
     content: String,
+    useCachedSecrets: Boolean,
     output: String?,
     busy: Boolean,
     error: String?,
     onPasswordChange: (String) -> Unit,
     onContentChange: (String) -> Unit,
+    onUseCachedSecretsChange: (Boolean) -> Unit,
     onEnsure: () -> Unit,
     onRatchet: () -> Unit,
     onStore: () -> Unit,
@@ -162,6 +178,18 @@ fun HiddenSlothMainContent(
             value = content,
             onValueChange = onContentChange,
         )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .fillMaxWidth()
+        ) {
+            Checkbox(
+                checked = useCachedSecrets,
+                onCheckedChange = { onUseCachedSecretsChange(!useCachedSecrets) })
+            Text("Use cached secrets")
+        }
 
         Row(
             modifier = Modifier
@@ -224,6 +252,7 @@ fun HiddenSlothScreenPreview_empty() {
         output = null,
         busy = false,
         error = null,
+        useCachedSecrets = false,
     )
 }
 
@@ -236,6 +265,7 @@ fun HiddenSlothScreenPreview_withEntriesBusy() {
         output = "Demo Content",
         busy = true,
         error = null,
+        useCachedSecrets = true,
     )
 }
 
@@ -248,5 +278,6 @@ fun HiddenSlothScreenPreview_error() {
         output = "Demo Content",
         busy = false,
         error = "Something went wrong...",
+        useCachedSecrets = false,
     )
 }

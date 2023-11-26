@@ -148,6 +148,60 @@ class HiddenSlothImplTest {
         assertThat(actual).isEqualTo(data)
     }
 
+    @Test
+    fun testHiddenSloth_whenEncryptNormalAndDecryptCached_thenResultMatches() {
+        val instance = createInstance()
+        val data = "hello".toByteArray()
+
+        instance.init(storage, DEFAULT_HANDLE)
+        instance.encrypt(storage, DEFAULT_PASSWORD, data)
+
+        val cachedSecrets = instance.computeCachedSecrets(storage, DEFAULT_PASSWORD)
+        val actual = instance.decrypt(storage, pw=null, cachedSecrets=cachedSecrets)
+        assertThat(actual).isEqualTo(data)
+    }
+
+    @Test
+    fun testHiddenSloth_whenEncryptCachedAndDecryptNormal_thenResultMatches() {
+        val instance = createInstance()
+        val data = "hello".toByteArray()
+
+        instance.init(storage, DEFAULT_HANDLE)
+
+        val cachedSecrets = instance.computeCachedSecrets(storage, DEFAULT_PASSWORD)
+        instance.encrypt(storage, pw=null, data=data, cachedSecrets=cachedSecrets)
+
+        val actual = instance.decrypt(storage, DEFAULT_PASSWORD)
+        assertThat(actual).isEqualTo(data)
+    }
+
+    @Test
+    fun testHiddenSloth_whenEncryptAndDecryptWithSameCached_thenResultMatches() {
+        val instance = createInstance()
+        val data = "hello".toByteArray()
+
+        instance.init(storage, DEFAULT_HANDLE)
+        val cachedSecrets = instance.computeCachedSecrets(storage, DEFAULT_PASSWORD)
+
+        // initial encryption with "fresh" secrets
+        instance.encrypt(storage, pw=null, data=data, cachedSecrets=cachedSecrets)
+
+        val actual1 = instance.decrypt(storage, DEFAULT_PASSWORD)
+        assertThat(actual1).isEqualTo(data)
+
+        // encrypt without secret
+        instance.encrypt(storage, pw= DEFAULT_PASSWORD, data=data)
+
+        val actual2 = instance.decrypt(storage, DEFAULT_PASSWORD)
+        assertThat(actual2).isEqualTo(data)
+
+        // encrypt with "old" secrets
+        instance.encrypt(storage, pw=null, data=data, cachedSecrets=cachedSecrets)
+
+        val actual3 = instance.decrypt(storage, DEFAULT_PASSWORD)
+        assertThat(actual3).isEqualTo(data)
+    }
+
     // all files that are expected to be created by a first call of HiddenSloth on an empty storage
     private val allFiles = listOf(
         File(context.filesDir, "sloth"),

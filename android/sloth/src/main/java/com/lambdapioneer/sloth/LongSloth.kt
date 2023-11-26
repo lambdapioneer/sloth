@@ -1,10 +1,12 @@
 package com.lambdapioneer.sloth
 
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.lambdapioneer.sloth.impl.LongSlothImpl
 import com.lambdapioneer.sloth.storage.SlothStorage
 
+@SuppressLint("VisibleForTests")
 @RequiresApi(Build.VERSION_CODES.P)
 class LongSloth internal constructor(
     private val impl: LongSlothImpl,

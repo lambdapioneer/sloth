@@ -89,6 +89,7 @@ class SlothLibTest {
         val storage = OnDiskStorage(context)
 
         val data = "hello".toByteArray()
+        val data2 = "hola".toByteArray()
         val pw = "password"
 
         // create a HiddenSloth instance
@@ -142,6 +143,26 @@ class SlothLibTest {
         hiddenSloth3.onAppStart()
         val actual3 = hiddenSloth3.decryptFromStorage(pw)
         assertThat(actual3).isEqualTo(data)
+
+        // decrypts and encrypt from another instance using cached secrets
+        val hiddenSloth4 = instance.getHiddenSlothInstance(
+            identifier = "hidden_sloth_test",
+            storage = storage,
+            params = params
+        )
+        hiddenSloth4.onAppStart()
+        val cachedSecrets = hiddenSloth4.computeCachedSecrets(pw)
+        val actual4 = hiddenSloth4.decryptFromStorageWithCachedSecrets(cachedSecrets)
+        assertThat(actual4).isEqualTo(data)
+
+        hiddenSloth4.encryptToStorageWithCachedSecrets(cachedSecrets, data2)
+
+        val actual5 = hiddenSloth4.decryptFromStorageWithCachedSecrets(cachedSecrets)
+        assertThat(actual5).isEqualTo(data2)
+
+        // decrypt with the first instance (again)
+        val actual6 = hiddenSloth1.decryptFromStorage(pw)
+        assertThat(actual6).isEqualTo(data2)
     }
 
     private fun createInstance(): SlothLib {

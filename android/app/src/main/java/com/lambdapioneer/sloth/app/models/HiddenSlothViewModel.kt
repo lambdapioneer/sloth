@@ -43,20 +43,33 @@ class HiddenSlothViewModel(
         }
     }
 
-    fun store(password: String, content: String) {
+    fun store(password: String, content: String, useCachedSecrets: Boolean) {
         runLongTaskInBackground {
-            hiddenSloth.encryptToStorage(
-                pw = password,
-                data = content.encodeToByteArray(),
-            )
+            val data = content.encodeToByteArray()
+            if (useCachedSecrets) {
+                val cachedSecrets = hiddenSloth.computeCachedSecrets(pw = password)
+                hiddenSloth.encryptToStorageWithCachedSecrets(
+                    cachedSecrets = cachedSecrets,
+                    data = data
+                )
+            } else {
+                hiddenSloth.encryptToStorage(
+                    pw = password,
+                    data = data,
+                )
+            }
         }
     }
 
-    fun load(password: String) {
+    fun load(password: String, useCachedSecrets: Boolean) {
         runLongTaskInBackground {
-            this.output.value = hiddenSloth.decryptFromStorage(
-                pw = password,
-            ).decodeToString()
+            val contentBytes = if (useCachedSecrets) {
+                val cachedSecrets = hiddenSloth.computeCachedSecrets(pw = password)
+                hiddenSloth.decryptFromStorageWithCachedSecrets(cachedSecrets)
+            } else {
+                hiddenSloth.decryptFromStorage(pw = password)
+            }
+            this.output.value = contentBytes.decodeToString()
         }
     }
 

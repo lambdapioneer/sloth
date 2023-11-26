@@ -124,21 +124,26 @@ class HiddenSlothImpl(
 
     /**
      * Encrypts the given [data] using the password [pw] and stores the ciphertext in [storage].
+     * If [cachedSecrets] is provided, the encryption is performed using the cached secrets instead
+     * of using the password.
      */
     fun encrypt(
         storage: WriteableStorage,
-        pw: String,
+        pw: String?,
         data: ByteArray,
         tracer: Tracer = NoopTracer(),
+        cachedSecrets: HiddenSlothCachedSecrets? = null,
     ) {
         tracer.start()
-
+        val hasPassword = pw != null
+        val hasCachedSecrets = cachedSecrets != null
+        require(hasPassword xor hasCachedSecrets) { "Either pw or cachedSecrets must be provided" }
         require(data.size <= params.payloadMaxLength) { "payload too large" }
 
         //
         // (1) Encrypt the inner data using the single-snapshot scheme
         //
-        val dessEncryptionResult = dessEncrypt(storage, pw, data)
+        val dessEncryptionResult = dessEncrypt(storage, pw, data, cachedSecrets)
 
         //
         // (2) Encrypt the inner ciphertext in another layer of encryption using temporary secrets
@@ -158,11 +163,13 @@ class HiddenSlothImpl(
         // (3) Encrypt the secrets `tk` and `tiv` using an outer layer of encryption using the
         // a new key inside the secure element referenced under `hDems`.
         //
+        val hDems = KeyHandle(storage.get(OUTER_H.key))
+        secureElement.aesCtrGenKey(hDems)
+
         val seIv = secureElement.aesCtrGenIv()
         storage.put(OUTER_IV.key, seIv)
 
         // unrolled for loop (the `tags` are part of the cipher text in this implementation)
-        val hDems = KeyHandle(storage.get(OUTER_H.key))
         storage.put(INNER_IV.key, secureElement.aesCtrEncrypt(hDems, seIv, dessEncryptionResult.iv))
         storage.put(TK.key, secureElement.aesCtrEncrypt(hDems, seIv, tk))
         storage.put(TIV.key, secureElement.aesCtrEncrypt(hDems, seIv, tiv))
@@ -197,7 +204,7 @@ class HiddenSlothImpl(
      * Prepares [HiddenSlothCachedSecrets] that can be used with [#decrypt] to speed up repeated access to
      * the ciphertext.
      */
-    fun prepareCachedSecrets(storage: ReadableStorage, pw: String): HiddenSlothCachedSecrets {
+    fun computeCachedSecrets(storage: ReadableStorage, pw: String): HiddenSlothCachedSecrets {
         val hDems = KeyHandle(storage.get(OUTER_H.key))
         val seIv = storage.get(OUTER_IV.key)
 
@@ -213,7 +220,7 @@ class HiddenSlothImpl(
         //
         val k = dessDeriveKey(storage, pw)
 
-        return HiddenSlothCachedSecrets(iv = iv, tk = tk, tiv = tiv, k = k)
+        return HiddenSlothCachedSecrets(k = k)
     }
 
     /**
@@ -243,19 +250,18 @@ class HiddenSlothImpl(
 
             //
             // (1) Decrypt the `iv`, `tk` and `tiv` secrets for the outer ciphertext
-            // OR use the values from the cached secrets
             //
-            val iv = cachedSecrets?.iv ?: secureElement.aesCtrDecrypt(
+            val iv = secureElement.aesCtrDecrypt(
                 keyHandle = hDems,
                 iv = seIv,
                 data = storage.get(INNER_IV.key)
             )
-            val tk = cachedSecrets?.tk ?: secureElement.aesCtrDecrypt(
+            val tk = secureElement.aesCtrDecrypt(
                 keyHandle = hDems,
                 iv = seIv,
                 data = storage.get(TK.key)
             )
-            val tiv = cachedSecrets?.tiv ?: secureElement.aesCtrDecrypt(
+            val tiv = secureElement.aesCtrDecrypt(
                 keyHandle = hDems,
                 iv = seIv,
                 data = storage.get(TIV.key)
@@ -348,7 +354,7 @@ class HiddenSlothImpl(
         @Suppress("UNUSED_VARIABLE")
         val k = longSloth.keyGen(storage, pw, h, slothKeyLenInBytes)
 
-        dessEncrypt(storage, pw, ByteArray(0))
+        dessEncrypt(storage = storage, pw = pw, data = ByteArray(0), cachedSecrets = null)
     }
 
     /**
@@ -369,10 +375,12 @@ class HiddenSlothImpl(
      */
     private fun dessEncrypt(
         storage: ReadableStorage,
-        pw: String,
+        pw: String?,
         data: ByteArray,
+        cachedSecrets: HiddenSlothCachedSecrets?,
     ): DessEncryptionResult {
-        val k = dessDeriveKey(storage, pw)
+        // caller enforces that either `cachedSecrets` or `pw` is not null
+        val k = cachedSecrets?.k ?: dessDeriveKey(storage, pw!!)
 
         val content = ByteBuffer.allocate(params.payloadMaxLength + contentOverhead())
         content.putInt(data.size)

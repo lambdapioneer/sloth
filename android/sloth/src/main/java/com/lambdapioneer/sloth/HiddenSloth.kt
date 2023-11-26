@@ -1,5 +1,6 @@
 package com.lambdapioneer.sloth
 
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.annotation.VisibleForTesting
@@ -9,6 +10,7 @@ import com.lambdapioneer.sloth.impl.OffsetAndLength
 import com.lambdapioneer.sloth.storage.SlothStorage
 import javax.crypto.AEADBadTagException
 
+@SuppressLint("VisibleForTests")
 @RequiresApi(Build.VERSION_CODES.P)
 class HiddenSloth internal constructor(
     private val impl: HiddenSlothImpl,
@@ -79,7 +81,7 @@ class HiddenSloth internal constructor(
         check(isInitialized)
         val namespacedStorage = storage.getOrCreateNamespace(identifier)
 
-        impl.encrypt(namespacedStorage, pw, data)
+        impl.encrypt(storage = namespacedStorage, pw = pw, data = data)
     }
 
     /**
@@ -105,6 +107,10 @@ class HiddenSloth internal constructor(
         }
     }
 
+    /**
+     * Computes the cached secrets for the given password. This can be used to speed up repeated
+     * calls to [encryptToStorageWithCachedSecrets] and [decryptFromStorageWithCachedSecrets].
+     */
     fun computeCachedSecrets(
         pw: String,
         authenticateStorage: Boolean = true,
@@ -116,7 +122,7 @@ class HiddenSloth internal constructor(
             if (authenticateStorage) {
                 impl.authenticate(namespacedStorage)
             }
-            return impl.prepareCachedSecrets(namespacedStorage, pw)
+            return impl.computeCachedSecrets(namespacedStorage, pw)
         } catch (e: AEADBadTagException) {
             throw SlothDecryptionFailed(
                 message = "Decryption failed for key $identifier. This might mean there was never any user data stored.",
@@ -126,8 +132,31 @@ class HiddenSloth internal constructor(
     }
 
     /**
+     * Uses the [HiddenSlothCachedSecrets] received from [computeCachedSecrets] to encrypt the
+     * [data]
+     *
+     * Note that with this method, the decryption is not authenticated. However, the
+     * [computeCachedSecrets] method by default authenticates the storage. So, given there are no
+     * intermediate changes, these calls are safe and efficient.
+     */
+    fun encryptToStorageWithCachedSecrets(
+        cachedSecrets: HiddenSlothCachedSecrets,
+        data: ByteArray,
+    ) {
+        check(isInitialized)
+        val namespacedStorage = storage.getOrCreateNamespace(identifier)
+
+        impl.encrypt(
+            storage = namespacedStorage,
+            pw = null,
+            data = data,
+            cachedSecrets = cachedSecrets
+        )
+    }
+
+    /**
      * Uses the [HiddenSlothCachedSecrets] received from [computeCachedSecrets] to decrypt the
-     * ciphertext from [storage].
+     * ciphertext.
      *
      * Note that with this method, the decryption is not authenticated. However, the
      * [computeCachedSecrets] method by default authenticates the storage. So, given there are no

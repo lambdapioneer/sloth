@@ -135,7 +135,7 @@ class HiddenSlothBenchTest {
         // if we test decryption with cached secrets, we compute them once here
         val cachedSecrets =
             if (operationUnderTest == HiddenSlothOperationUnderTest.DECRYPT_WITH_CACHED_KEY) {
-                hiddenSloth.prepareCachedSecrets(
+                hiddenSloth.computeCachedSecrets(
                     storage = storage,
                     pw = DEFAULT_PASSWORD,
                 )
