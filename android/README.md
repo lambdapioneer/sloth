@@ -19,7 +19,7 @@ Add the following dependency to your gradle build file (using Kotlin DSL syntax)
 
 ```kotlin
 dependencies {
-    implementation("com.lambdapioneer.sloth:sloth:0.1.1")
+    implementation("com.lambdapioneer.sloth:sloth:0.2.0")
     // ...
 }
 ```
@@ -118,7 +118,7 @@ By keeping it separate we can avoid the overhead of including the Libsodium libr
 
 ```kotlin
 dependencies {
-    implementation("com.lambdapioneer.sloth:sloth-pwhash-libsodium:0.1.1")
+    implementation("com.lambdapioneer.sloth:sloth-pwhash-libsodium:0.2.0")
     // ...
 }
 ```
