@@ -7,6 +7,11 @@ private let P256_PUBLIC_KEY_SIZE = 32
 public struct RainbowSlothStorageState {
     public var handle: String
     public var salt: Data
+
+    public init(handle: String, salt: Data) {
+        self.handle = handle
+        self.salt = salt
+    }
 }
 
 /// Implementation of the RainbowSloth algorithm for tuneable password-based key stretching on iOS using the SecureEnclave (SE).
