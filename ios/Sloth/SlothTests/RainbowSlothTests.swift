@@ -52,7 +52,7 @@ final class RainbowSlothTests: XCTestCase {
 
         // note that we do not update the storage, but
         // using the same handle will change the key inside the SE
-        let _ = try sloth.keygen(
+        _ = try sloth.keygen(
             pw: "test",
             handle: "default",
             outputLength: 32

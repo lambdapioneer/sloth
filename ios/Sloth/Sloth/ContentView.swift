@@ -2,7 +2,7 @@ import RainbowSloth
 import SwiftUI
 
 func runExperiment(experiment: String, n: Int, iterations: Int) throws -> [Double] {
-    switch(experiment){
+    switch experiment {
     case "seop":
         return try SecureEnclaveEvaluationWrapper.runEval(iterations: iterations)
     case "sloth":
@@ -31,7 +31,7 @@ func backgroundWork(experiment: String, n: Int, iterations: Int) throws -> Strin
         "iterations": iterations,
         "executionTimeSeconds": executionTimes
     ]
-    let jsonData = try! JSONSerialization.data(withJSONObject: json)
+    let jsonData = try JSONSerialization.data(withJSONObject: json)
     debugPrint("json", json)
 
     //
@@ -95,8 +95,8 @@ struct ContentView: View {
                 taskOutput = "started"
                 isRunning = true
                 let dispatchQueue = DispatchQueue.global(qos: .background)
-                dispatchQueue.async{
-                    do{
+                dispatchQueue.async {
+                    do {
                         let output = try backgroundWork(
                             experiment: taskSelection,
                             n: Int(n),
@@ -106,7 +106,7 @@ struct ContentView: View {
                             taskOutput = output
                             isRunning = false
                         }
-                    }catch {
+                    } catch {
                         DispatchQueue.main.async {
                             taskOutput = "error: \(error)"
                             isRunning = false

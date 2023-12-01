@@ -1,48 +1,46 @@
 import Foundation
+import Sodium
 
+public typealias Bytes = [UInt8]
 
-internal extension Data {
-
+extension Bytes {
     /// Creates a new `Data` object initialized with bytes decoded from the provided hexadecimal-encoded String.
-    init(hex: String) {
-        let l = hex.count / 2
-        var data = Data(capacity: l)
-        var begin = hex.startIndex
-        for _ in 0..<l {
-            let end = hex.index(begin, offsetBy: 2)
-            let bytes = hex[begin..<end]
-            begin = end
-            var b = UInt8(bytes, radix: 16)!
-            data.append( &b, count: 1)
+    init(hex: String) throws {
+        guard let bytes = Sodium().utils.hex2bin(hex) else {
+            throw SlothError.failedToDecodeHexString
         }
-        self = data
+        self = bytes
     }
 
     /// Returns a hexadecimal-encoded version of this `Data` object.
-    var toHex: String {
-        return map { String(format: "%02x", $0) }
-            .joined()
+    func toHex() throws -> String {
+        guard let string = Sodium().utils.bin2hex(self) else {
+            throw SlothError.failedToEncodeHexString
+        }
+        return string
     }
 
     /// Splits this array into arrays that each have `length` bytes. Throws if the `.count` of this object cannot be evenly divided.
-    func chunkify(length: Int) -> [Data] {
-        precondition(self.count % length == 0, "Data is not evenly divisible by chunk size.")
+    func chunkify(length: Int) throws -> [Bytes] {
+        if self.count % length != 0 {
+            throw SlothError.failedToChunkifyArray
+        }
         let count = self.count / length
-        var result = [Data]()
+        var result = [Bytes]()
         for i in 0..<count {
             let start = i * length
             let end = start + length
-            let chunk = self[start..<end]
+            let chunk = Bytes(self[start..<end])
             result.append(chunk)
         }
         return result
     }
 
-    /// Concatenates all given `chunks` to create a new `Data` object.
-    static func combine(chunks: [Data]) -> Data {
-        var result = Data()
+    /// Concatenates all given `chunks` to create a new `Bytes` object.
+    static func concat(chunks: [Bytes]) -> Bytes {
+        var result = Bytes()
         for chunk in chunks {
-            result.append(chunk)
+            result.append(contentsOf: chunk)
         }
         return result
     }
