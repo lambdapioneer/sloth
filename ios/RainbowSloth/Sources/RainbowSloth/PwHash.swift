@@ -1,29 +1,29 @@
-import Sodium
 import Foundation
+import Sodium
 
 /// Wrapper around the Argon2id password hashing algorithm as provided by `Sodium`.
-internal struct PwHash {
+enum PwHash {
 
     /// Derives a key from the given `salt` and password `pw`. The output will be `outputLength` bytes long.
-    internal static func derive(salt: Data, pw: Data, outputLength: Int) -> Data {
+    static func derive(salt: Bytes, pw: Bytes, outputLength: Int) throws -> Bytes {
         // OWASP: "Use Argon2id with a minimum configuration of 19 MiB of memory, an iteration count of 2, and 1 degree of parallelism."
-        let sodium = Sodium.init()
-        let sodiumPwHash = sodium.pwHash
-        let res =  sodiumPwHash.hash(
+        guard let res = Sodium().pwHash.hash(
             outputLength: outputLength,
             passwd: Array(pw),
             salt: Array(salt),
             opsLimit: 2,
             memLimit: 19*1024*1024 // 19 MiB
-        )
-        return Data(res!)
+        ) else {
+            throw SlothError.failedToDeriveArgon2Hash
+        }
+        return res
     }
 
     /// Creates a new random `salt` byte array that can be used with the `derive` function.
-    internal static func randomSalt(outputLength: Int = 16) -> Data {
-        var bytes = [UInt8](repeating: 0, count: outputLength)
-        let result = SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes)
-        assert(result == errSecSuccess, "Failed to generate random bytes")
-        return Data(bytes)
+    static func generateRandomSalt(outputLength: Int = 16) throws -> Bytes {
+        guard let saltBytes = Sodium().randomBytes.buf(length: outputLength) else {
+            throw SlothError.failedToGenerateRandomBytes
+        }
+        return saltBytes
     }
 }

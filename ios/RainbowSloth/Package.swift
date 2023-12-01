@@ -8,10 +8,10 @@ let package = Package(
     products: [
         .library(
             name: "RainbowSloth",
-            targets: ["RainbowSloth"]),
+            targets: ["RainbowSloth"])
     ],
     dependencies: [
-        .package(url: "https://github.com/jedisct1/swift-sodium.git", from: "0.9.1"),
+        .package(url: "https://github.com/jedisct1/swift-sodium.git", from: "0.9.1")
     ],
     targets: [
         .target(
@@ -22,6 +22,6 @@ let package = Package(
         ),
         .testTarget(
             name: "RainbowSlothTests",
-            dependencies: ["RainbowSloth"]),
+            dependencies: ["RainbowSloth"])
     ]
 )
