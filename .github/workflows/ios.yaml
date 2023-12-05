@@ -33,9 +33,11 @@ jobs:
       - name: Replace contents
         run: |
           cd target
+          rm -rv *
           cp -rv ../ios/RainbowSloth/* .
+          git status
 
-      - name: Pushy to remote
+      - name: Push to remote
         run: |
           cd target
           git add .
