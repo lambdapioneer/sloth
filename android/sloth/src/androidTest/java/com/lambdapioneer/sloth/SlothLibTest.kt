@@ -134,6 +134,12 @@ class SlothLibTest {
             hiddenSloth1.decryptFromStorage("wrong passphrase")
         }
 
+        // does not decrypt under a different passphrase with pre-computed secrets
+        assertThatExceptionOfType(SlothDecryptionFailed::class.java).isThrownBy {
+            val wrongCachedSecrets = hiddenSloth1.computeCachedSecrets("wrong passphrase")
+            hiddenSloth1.decryptFromStorageWithCachedSecrets(wrongCachedSecrets)
+        }
+
         // decrypts from another instance
         val hiddenSloth3 = instance.getHiddenSlothInstance(
             identifier = "hidden_sloth_test",
