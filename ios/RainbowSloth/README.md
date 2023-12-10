@@ -12,14 +12,20 @@ Add this repository as a dependency to your `Package.swift` file like so:
 
 ```swift
     dependencies: [
-        .package(url: "https://github.com/lambdapioneer/sloth-ios.git", from: "0.0.2"),
+        // ...
+        .package(url: "https://github.com/lambdapioneer/sloth-ios.git", from: "0.3.0"),
     ],
-    
-    // ...
-    
+    targets: [
+        .target(
+            name: "YourAppTarget",
             dependencies: [
+                // ...
                 .product(name: "RainbowSloth", package: "sloth-ios")
-            ]
+            ],
+            // ...
+        )
+        // ...
+    ]
 ```
 
 
