@@ -205,21 +205,7 @@ class HiddenSlothImpl(
      * the ciphertext.
      */
     fun computeCachedSecrets(storage: ReadableStorage, pw: String): HiddenSlothCachedSecrets {
-        val hDems = KeyHandle(storage.get(OUTER_H.key))
-        val seIv = storage.get(OUTER_IV.key)
-
-        //
-        // (1) Decrypt the `iv`, `tk` and `tiv` secrets for the outer ciphertext
-        //
-        val iv = secureElement.aesCtrDecrypt(hDems, seIv, storage.get(INNER_IV.key))
-        val tk = secureElement.aesCtrDecrypt(hDems, seIv, storage.get(TK.key))
-        val tiv = secureElement.aesCtrDecrypt(hDems, seIv, storage.get(TIV.key))
-
-        //
-        // (2) Derive the encryption key for the inner ciphertext
-        //
         val k = dessDeriveKey(storage, pw)
-
         return HiddenSlothCachedSecrets(k = k)
     }
 
