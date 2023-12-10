@@ -174,12 +174,19 @@ class HiddenSloth internal constructor(
         check(isInitialized)
         val namespacedStorage = storage.getOrCreateNamespace(identifier)
 
-        return impl.decrypt(
-            storage = namespacedStorage,
-            pw = null,
-            cachedSecrets = cachedSecrets,
-            decryptionOffsetAndLength = decryptionOffsetAndLength
-        )
+        try {
+            return impl.decrypt(
+                storage = namespacedStorage,
+                pw = null,
+                cachedSecrets = cachedSecrets,
+                decryptionOffsetAndLength = decryptionOffsetAndLength
+            )
+        } catch (e: AEADBadTagException) {
+            throw SlothDecryptionFailed(
+                message = "Decryption failed for key $identifier. This might mean there was never any user data stored.",
+                cause = e
+            )
+        }
     }
 
     private fun identifierToHandle(identifier: String) =
