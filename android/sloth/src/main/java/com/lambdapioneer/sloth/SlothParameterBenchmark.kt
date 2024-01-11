@@ -1,5 +1,7 @@
 package com.lambdapioneer.sloth
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.annotation.VisibleForTesting
 import com.lambdapioneer.sloth.impl.LongSlothParams
 import com.lambdapioneer.sloth.secureelement.KeyHandle
@@ -9,6 +11,7 @@ import java.time.Duration
 /**
  * A benchmark for determining a suitable L parameter for [HiddenSloth] for the current device.
  */
+@RequiresApi(Build.VERSION_CODES.P)
 class SlothParameterBenchmark(private val secureElement: SecureElement) {
 
     /**

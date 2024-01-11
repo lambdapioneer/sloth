@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.lambdapioneer.sloth.app"
-    compileSdk = libs.versions.compilesdk.get().toInt()
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.lambdapioneer.sloth.app"
-        minSdk = libs.versions.minsdk.get().toInt()
-        compileSdk = libs.versions.compilesdk.get().toInt()
+        minSdk = libs.versions.minSdkApp.get().toInt()
+        compileSdk = libs.versions.compileSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
 

@@ -8,10 +8,10 @@ plugins {
 
 android {
     namespace = "com.lambdapioneer.sloth.pwhash_libsodium"
-    compileSdk = libs.versions.compilesdk.get().toInt()
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = libs.versions.minsdk.get().toInt()
+        minSdk = libs.versions.minSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
