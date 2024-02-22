@@ -1,4 +1,4 @@
-@testable import RainbowSloth
+@testable import LibSloth
 import XCTest
 
 /// These tests must live in a target of an app to get the right entitlements to access the key chain / SlothSecureEnclave.

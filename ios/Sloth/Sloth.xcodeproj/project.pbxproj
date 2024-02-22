@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		295AAC9F2B87AA7300B0D95D /* RainbowSlothTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295AAC9E2B87AA7300B0D95D /* RainbowSlothTests.swift */; };
 		29AAF9C12B0B55A800E12423 /* SlothApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AAF9C02B0B55A800E12423 /* SlothApp.swift */; };
 		29AAF9C32B0B55A800E12423 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AAF9C22B0B55A800E12423 /* ContentView.swift */; };
 		29AAF9C52B0B55A900E12423 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 29AAF9C42B0B55A900E12423 /* Assets.xcassets */; };
 		29AAF9C82B0B55A900E12423 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 29AAF9C72B0B55A900E12423 /* Preview Assets.xcassets */; };
-		29AAF9EE2B0B5FA400E12423 /* RainbowSlothTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AAF9ED2B0B5FA400E12423 /* RainbowSlothTests.swift */; };
 		29AAF9F02B0B5FF700E12423 /* SecureEnclaveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AAF9EF2B0B5FF700E12423 /* SecureEnclaveTests.swift */; };
 		29AAF9F22B0B618300E12423 /* UIDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AAF9F12B0B618300E12423 /* UIDevice.swift */; };
-		29AAF9F52B0B61AC00E12423 /* RainbowSloth in Frameworks */ = {isa = PBXBuildFile; productRef = 29AAF9F42B0B61AC00E12423 /* RainbowSloth */; };
-		29AAF9F72B0B624200E12423 /* RainbowSloth in Frameworks */ = {isa = PBXBuildFile; productRef = 29AAF9F62B0B624200E12423 /* RainbowSloth */; };
+		29AAF9F52B0B61AC00E12423 /* LibSloth in Frameworks */ = {isa = PBXBuildFile; productRef = 29AAF9F42B0B61AC00E12423 /* LibSloth */; };
+		29AAF9F72B0B624200E12423 /* LibSloth in Frameworks */ = {isa = PBXBuildFile; productRef = 29AAF9F62B0B624200E12423 /* LibSloth */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,14 +29,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		295AAC9E2B87AA7300B0D95D /* RainbowSlothTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowSlothTests.swift; sourceTree = "<group>"; };
 		29AAF9BD2B0B55A800E12423 /* Sloth.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sloth.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		29AAF9C02B0B55A800E12423 /* SlothApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlothApp.swift; sourceTree = "<group>"; };
 		29AAF9C22B0B55A800E12423 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		29AAF9C42B0B55A900E12423 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		29AAF9C72B0B55A900E12423 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		29AAF9CD2B0B55A900E12423 /* SlothTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SlothTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		29AAF9EA2B0B55F300E12423 /* RainbowSloth */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = RainbowSloth; path = ../../RainbowSloth; sourceTree = "<group>"; };
-		29AAF9ED2B0B5FA400E12423 /* RainbowSlothTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowSlothTests.swift; sourceTree = "<group>"; };
+		29AAF9EA2B0B55F300E12423 /* LibSloth */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = LibSloth; path = ../../LibSloth; sourceTree = "<group>"; };
 		29AAF9EF2B0B5FF700E12423 /* SecureEnclaveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureEnclaveTests.swift; sourceTree = "<group>"; };
 		29AAF9F12B0B618300E12423 /* UIDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDevice.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -46,7 +46,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				29AAF9F52B0B61AC00E12423 /* RainbowSloth in Frameworks */,
+				29AAF9F52B0B61AC00E12423 /* LibSloth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -54,7 +54,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				29AAF9F72B0B624200E12423 /* RainbowSloth in Frameworks */,
+				29AAF9F72B0B624200E12423 /* LibSloth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,7 +83,7 @@
 		29AAF9BF2B0B55A800E12423 /* Sloth */ = {
 			isa = PBXGroup;
 			children = (
-				29AAF9EA2B0B55F300E12423 /* RainbowSloth */,
+				29AAF9EA2B0B55F300E12423 /* LibSloth */,
 				29AAF9C02B0B55A800E12423 /* SlothApp.swift */,
 				29AAF9C22B0B55A800E12423 /* ContentView.swift */,
 				29AAF9F12B0B618300E12423 /* UIDevice.swift */,
@@ -104,7 +104,7 @@
 		29AAF9D02B0B55A900E12423 /* SlothTests */ = {
 			isa = PBXGroup;
 			children = (
-				29AAF9ED2B0B5FA400E12423 /* RainbowSlothTests.swift */,
+				295AAC9E2B87AA7300B0D95D /* RainbowSlothTests.swift */,
 				29AAF9EF2B0B5FF700E12423 /* SecureEnclaveTests.swift */,
 			);
 			path = SlothTests;
@@ -134,7 +134,7 @@
 			);
 			name = Sloth;
 			packageProductDependencies = (
-				29AAF9F42B0B61AC00E12423 /* RainbowSloth */,
+				29AAF9F42B0B61AC00E12423 /* LibSloth */,
 			);
 			productName = Sloth;
 			productReference = 29AAF9BD2B0B55A800E12423 /* Sloth.app */;
@@ -155,7 +155,7 @@
 			);
 			name = SlothTests;
 			packageProductDependencies = (
-				29AAF9F62B0B624200E12423 /* RainbowSloth */,
+				29AAF9F62B0B624200E12423 /* LibSloth */,
 			);
 			productName = SlothTests;
 			productReference = 29AAF9CD2B0B55A900E12423 /* SlothTests.xctest */;
@@ -233,7 +233,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				29AAF9EE2B0B5FA400E12423 /* RainbowSlothTests.swift in Sources */,
+				295AAC9F2B87AA7300B0D95D /* RainbowSlothTests.swift in Sources */,
 				29AAF9F02B0B5FF700E12423 /* SecureEnclaveTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -497,13 +497,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		29AAF9F42B0B61AC00E12423 /* RainbowSloth */ = {
+		29AAF9F42B0B61AC00E12423 /* LibSloth */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = RainbowSloth;
+			productName = LibSloth;
 		};
-		29AAF9F62B0B624200E12423 /* RainbowSloth */ = {
+		29AAF9F62B0B624200E12423 /* LibSloth */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = RainbowSloth;
+			productName = LibSloth;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

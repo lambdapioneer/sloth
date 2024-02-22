@@ -1,4 +1,4 @@
-@testable import RainbowSloth
+@testable import LibSloth
 import XCTest
 
 final class PwHashTests: XCTestCase {

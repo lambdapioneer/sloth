@@ -34,7 +34,7 @@ jobs:
         run: |
           cd target
           rm -rv *
-          cp -rv ../ios/RainbowSloth/* .
+          cp -rv ../ios/LibSloth/* .
           git status
 
       - name: Push to remote

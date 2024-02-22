@@ -1,18 +1,18 @@
 # Sloth: iOS
 
 We have implemented **RainbowSloth** for iOS in this folder
-It consists of the `RainbowSloth` package and the `Sloth` demo app.
+It consists of the `LibSloth` package and the `Sloth` demo app.
 
 
-## Using the RainbowSloth package
+## Using the LibSloth package
 
-The `RainbowSloth` package is synced to another repository to allow it to be included as a Swift package dependency.
+The `LibSloth` package is synced to another repository to allow it to be included as a Swift package dependency.
 Refer to the `README.md` over there: https://github.com/lambdapioneer/sloth-ios
 
 
 ## Tests
 
-Most low-level tests live inside the `RainbowSloth` package.
+Most low-level tests live inside the `LibSloth` package.
 However, those that require the Secure Enclave live in the `Sloth` app test target as they require entitlements.
 When testing, make sure to execute both sets of tests.
 

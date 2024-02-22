@@ -1,4 +1,4 @@
-import RainbowSloth
+import LibSloth
 import SwiftUI
 
 func runExperiment(experiment: String, n: Int, iterations: Int) throws -> [Double] {
