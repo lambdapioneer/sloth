@@ -27,7 +27,7 @@ class LongSloth internal constructor(
         val namespacedHandle = identifierToHandle(identifier)
         val namespacedStorage = storage.getOrCreateNamespace(identifier)
 
-        impl.onAppStart(storage = namespacedStorage, h=namespacedHandle)
+        impl.onAppStart(storage = namespacedStorage, h = namespacedHandle)
     }
 
     /**
@@ -37,7 +37,7 @@ class LongSloth internal constructor(
      * @param outputLengthBytes The length of the output key in bytes. Defaults to 32 bytes.
      */
     fun createNewKey(
-        pw: String,
+        pw: CharArray,
         outputLengthBytes: Int = 32,
     ): ByteArray {
         val namespacedHandle = identifierToHandle(identifier)
@@ -52,13 +52,27 @@ class LongSloth internal constructor(
     }
 
     /**
+     * Creates a new key with the given identifier and password.
+     *
+     * @param pw The password to use for the key derivation.
+     * @param outputLengthBytes The length of the output key in bytes. Defaults to 32 bytes.
+     */
+    fun createNewKey(
+        pw: String,
+        outputLengthBytes: Int = 32,
+    ): ByteArray = createNewKey(
+        pw = pw.toCharArray(),
+        outputLengthBytes = outputLengthBytes,
+    )
+
+    /**
      * Derives the secret for the given key identifier and password.
      *
      * @param pw The password to use for the key derivation.
      * @param outputLengthBytes The length of the output key in bytes. Defaults to 32 bytes.
      */
     fun deriveForExistingKey(
-        pw: String,
+        pw: CharArray,
         outputLengthBytes: Int = 32,
     ): ByteArray {
         val namespacedStorage = storage.getOrCreateNamespace(identifier)
@@ -69,6 +83,20 @@ class LongSloth internal constructor(
             outputLengthBytes = outputLengthBytes,
         )
     }
+
+    /**
+     * Derives the secret for the given key identifier and password.
+     *
+     * @param pw The password to use for the key derivation.
+     * @param outputLengthBytes The length of the output key in bytes. Defaults to 32 bytes.
+     */
+    fun deriveForExistingKey(
+        pw: String,
+        outputLengthBytes: Int = 32,
+    ): ByteArray = deriveForExistingKey(
+        pw = pw.toCharArray(),
+        outputLengthBytes = outputLengthBytes,
+    )
 
     /**
      * Checks the key with [identifier] exists.

@@ -32,13 +32,13 @@ class LongSlothViewModel(
 
     fun generateKey(password: String) {
         runLongTaskInBackground {
-            key.value = longSloth.createNewKey(pw = password)
+            key.value = longSloth.createNewKey(pw = password.toCharArray())
         }
     }
 
     fun deriveKey(password: String) {
         runLongTaskInBackground {
-            key.value = longSloth.deriveForExistingKey(pw = password)
+            key.value = longSloth.deriveForExistingKey(pw = password.toCharArray())
         }
     }
 

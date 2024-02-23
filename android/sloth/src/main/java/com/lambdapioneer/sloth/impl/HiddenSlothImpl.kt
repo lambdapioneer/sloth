@@ -16,6 +16,7 @@ import com.lambdapioneer.sloth.utils.NoopTracer
 import com.lambdapioneer.sloth.utils.Tracer
 import com.lambdapioneer.sloth.utils.ceilOfIntegerDivision
 import com.lambdapioneer.sloth.utils.secureRandomBytes
+import com.lambdapioneer.sloth.utils.secureRandomChars
 import java.nio.ByteBuffer
 import java.util.*
 import javax.crypto.AEADBadTagException
@@ -65,7 +66,7 @@ class HiddenSlothImpl(
     tracer: Tracer = NoopTracer(),
 ) {
     // Lambda is given in bits, but we need bytes for the key length
-    private val slothKeyLenInBytes = ceilOfIntegerDivision(params.lambda, 8)
+    private val slothKeyLenInBytes = ceilOfIntegerDivision(params.longSlothParams.lambda, 8)
 
     private val longSloth = LongSlothImpl(
         params = params.longSlothParams,
@@ -98,7 +99,8 @@ class HiddenSlothImpl(
 
         secureElement.aesCtrGenKey(KeyHandle(hDems))
 
-        val pw = secureRandomBytes(slothKeyLenInBytes).decodeToString()
+        // if the storage does not exist, we create a new key under a randomly chosen passphrase
+        val pw = secureRandomChars(entropy = params.longSlothParams.lambda.toDouble())
         encrypt(storage, pw, ByteArray(0))
 
         tracer.finish()
@@ -129,7 +131,7 @@ class HiddenSlothImpl(
      */
     fun encrypt(
         storage: WriteableStorage,
-        pw: String?,
+        pw: CharArray?,
         data: ByteArray,
         tracer: Tracer = NoopTracer(),
         cachedSecrets: HiddenSlothCachedSecrets? = null,
@@ -204,7 +206,7 @@ class HiddenSlothImpl(
      * Prepares [HiddenSlothCachedSecrets] that can be used with [#decrypt] to speed up repeated access to
      * the ciphertext.
      */
-    fun computeCachedSecrets(storage: ReadableStorage, pw: String): HiddenSlothCachedSecrets {
+    fun computeCachedSecrets(storage: ReadableStorage, pw: CharArray): HiddenSlothCachedSecrets {
         val k = dessDeriveKey(storage, pw)
         return HiddenSlothCachedSecrets(k = k)
     }
@@ -220,7 +222,7 @@ class HiddenSlothImpl(
      */
     fun decrypt(
         storage: ReadableStorage,
-        pw: String?,
+        pw: CharArray?,
         tracer: Tracer = NoopTracer(),
         cachedSecrets: HiddenSlothCachedSecrets? = null,
         decryptionOffsetAndLength: OffsetAndLength? = null,
@@ -335,7 +337,8 @@ class HiddenSlothImpl(
      * Initializes the DESS scheme. This method must be called before any other DESS method.
      */
     private fun dessInit(storage: WriteableStorage, h: ByteArray) {
-        val pw = secureRandomBytes(params.lambda).decodeToString()
+        // if the storage does not exist, we create a new key under a randomly chosen passphrase
+        val pw = secureRandomChars(entropy = params.longSlothParams.lambda.toDouble())
 
         @Suppress("UNUSED_VARIABLE")
         val k = longSloth.keyGen(storage, pw, h, slothKeyLenInBytes)
@@ -349,7 +352,7 @@ class HiddenSlothImpl(
      */
     private fun dessDeriveKey(
         storage: ReadableStorage,
-        pw: String,
+        pw: CharArray,
     ) = longSloth.derive(storage = storage, pw = pw, outputLengthBytes = slothKeyLenInBytes)
 
     @Suppress("ArrayInDataClass")
@@ -361,7 +364,7 @@ class HiddenSlothImpl(
      */
     private fun dessEncrypt(
         storage: ReadableStorage,
-        pw: String?,
+        pw: CharArray?,
         data: ByteArray,
         cachedSecrets: HiddenSlothCachedSecrets?,
     ): DessEncryptionResult {
@@ -395,7 +398,7 @@ class HiddenSlothImpl(
     @Suppress("UsePropertyAccessSyntax")
     private fun dessDecrypt(
         storage: ReadableStorage,
-        pw: String?,
+        pw: CharArray?,
         iv: ByteArray,
         blobAndTag: ByteArray,
         cachedSecrets: HiddenSlothCachedSecrets? = null,

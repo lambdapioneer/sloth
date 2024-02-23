@@ -6,6 +6,7 @@ import com.lambdapioneer.sloth.crypto.Pbkdf2PwHash
 import com.lambdapioneer.sloth.storage.OnDiskStorage
 import com.lambdapioneer.sloth.testing.createSecureElementOrSkip
 import com.lambdapioneer.sloth.utils.secureRandomBytes
+import com.lambdapioneer.sloth.utils.secureRandomChars
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -13,7 +14,7 @@ import org.junit.runner.RunWith
 import java.io.File
 
 private val DEFAULT_HANDLE = "handle".encodeToByteArray()
-private const val DEFAULT_PASSWORD = "password"
+private val DEFAULT_PASSWORD = "password".toCharArray()
 private const val DEFAULT_OUTPUT_LENGTH = 32
 
 @RunWith(AndroidJUnit4::class)
@@ -51,7 +52,7 @@ class LongSlothImplTest {
     @Test
     fun whenKeyGenWithLongPassword_thenYieldSameKey() {
         val instance = createInstance()
-        val pw = secureRandomBytes(255).decodeToString()
+        val pw = secureRandomChars(255)
 
         val k1 = instance.keyGen(
             storage = storage,
@@ -82,7 +83,7 @@ class LongSlothImplTest {
 
         val k2 = instance.derive(
             storage = storage,
-            pw = "not the default password",
+            pw = "not the default password".toCharArray(),
             outputLengthBytes = DEFAULT_OUTPUT_LENGTH
         )
 

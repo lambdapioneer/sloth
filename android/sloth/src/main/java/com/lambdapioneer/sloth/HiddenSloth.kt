@@ -75,7 +75,7 @@ class HiddenSloth internal constructor(
      * [identifier]. The storage must have been previous initialized using [onAppStart].
      */
     fun encryptToStorage(
-        pw: String,
+        pw: CharArray,
         data: ByteArray,
     ) {
         check(isInitialized)
@@ -85,6 +85,15 @@ class HiddenSloth internal constructor(
     }
 
     /**
+     * Encrypts the given [data] under the provided [pw] using the [storage] namespaced to
+     * [identifier]. The storage must have been previous initialized using [onAppStart].
+     */
+    fun encryptToStorage(
+        pw: String,
+        data: ByteArray,
+    ) = encryptToStorage(pw = pw.toCharArray(), data = data)
+
+    /**
      * Authenticates and decrypts the entire storage using the provided password. If the password
      * does not unlock the storage, a [SlothDecryptionFailed] exception is thrown.
      *
@@ -92,7 +101,7 @@ class HiddenSloth internal constructor(
      * (b) the password is wrong, or (c) the storage has been tampered with.
      */
     fun decryptFromStorage(
-        pw: String,
+        pw: CharArray,
     ): ByteArray {
         check(isInitialized)
         val namespacedStorage = storage.getOrCreateNamespace(identifier)
@@ -108,11 +117,22 @@ class HiddenSloth internal constructor(
     }
 
     /**
+     * Authenticates and decrypts the entire storage using the provided password. If the password
+     * does not unlock the storage, a [SlothDecryptionFailed] exception is thrown.
+     *
+     * Note that failure to decrypt can mean that (a) no data was ever encrypted,
+     * (b) the password is wrong, or (c) the storage has been tampered with.
+     */
+    fun decryptFromStorage(
+        pw: String,
+    ): ByteArray = decryptFromStorage(pw = pw.toCharArray())
+
+    /**
      * Computes the cached secrets for the given password. This can be used to speed up repeated
      * calls to [encryptToStorageWithCachedSecrets] and [decryptFromStorageWithCachedSecrets].
      */
     fun computeCachedSecrets(
-        pw: String,
+        pw: CharArray,
         authenticateStorage: Boolean = true,
     ): HiddenSlothCachedSecrets {
         check(isInitialized)
@@ -130,6 +150,18 @@ class HiddenSloth internal constructor(
             )
         }
     }
+
+    /**
+     * Computes the cached secrets for the given password. This can be used to speed up repeated
+     * calls to [encryptToStorageWithCachedSecrets] and [decryptFromStorageWithCachedSecrets].
+     */
+    fun computeCachedSecrets(
+        pw: String,
+        authenticateStorage: Boolean = true,
+    ): HiddenSlothCachedSecrets = computeCachedSecrets(
+        pw = pw.toCharArray(),
+        authenticateStorage = authenticateStorage
+    )
 
     /**
      * Uses the [HiddenSlothCachedSecrets] received from [computeCachedSecrets] to encrypt the
