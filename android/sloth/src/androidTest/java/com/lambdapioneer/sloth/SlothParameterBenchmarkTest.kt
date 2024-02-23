@@ -54,7 +54,10 @@ class SlothParameterBenchmarkTest {
     private fun internal_whenBenchmark_thenResultingRuntimeIsSlightlyLarger(
         targetDuration: Duration,
     ) {
-        val instance = getInstance()
+        // We want to skip instead of using the mocked SE, as we need the real one for the
+        // verification of the runtime using the normal `SlothLib` API below.
+        val instance = getInstance(useMockedSecureElementOtherwise = false)
+
         val benchmarkResult = instance.determineParameter(targetDuration)
 
         assertThat(benchmarkResult.duration).isGreaterThanOrEqualTo(targetDuration)
@@ -69,7 +72,7 @@ class SlothParameterBenchmarkTest {
         )
 
         val waitingTime = measureWaitingTime {
-            longSloth.createNewKey(pw = "passphrase")
+            longSloth.createNewKey(pw = "passphrase".toCharArray())
         }
         assertThat(waitingTime).isGreaterThan(targetDuration)
         assertThat(waitingTime).isLessThan(targetDuration.multipliedBy(5))
@@ -119,8 +122,11 @@ class SlothParameterBenchmarkTest {
         return Duration.ofMillis(end - start)
     }
 
-    private fun getInstance(): SlothParameterBenchmark {
-        val secureElement = createSecureElementOrSkip(context = context)
+    private fun getInstance(useMockedSecureElementOtherwise: Boolean = true): SlothParameterBenchmark {
+        val secureElement = createSecureElementOrSkip(
+            context = context,
+            useMockedSecureElementOtherwise = useMockedSecureElementOtherwise,
+        )
         return SlothParameterBenchmark(secureElement)
     }
 }

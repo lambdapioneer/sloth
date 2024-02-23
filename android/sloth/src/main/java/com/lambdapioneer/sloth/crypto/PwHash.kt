@@ -20,5 +20,5 @@ interface PwHash {
      * @param password The password to use for the hash function.
      * @param outputLengthInBytes The length of the output hash in bytes.
      */
-    fun deriveHash(salt: ByteArray, password: String, outputLengthInBytes: Int): ByteArray
+    fun deriveHash(salt: ByteArray, password: CharArray, outputLengthInBytes: Int): ByteArray
 }

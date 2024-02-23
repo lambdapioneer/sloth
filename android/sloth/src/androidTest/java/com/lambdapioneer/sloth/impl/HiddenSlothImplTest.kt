@@ -18,7 +18,7 @@ import java.io.File
 import javax.crypto.AEADBadTagException
 
 private val DEFAULT_HANDLE = "handle".encodeToByteArray()
-private const val DEFAULT_PASSWORD = "password"
+private val DEFAULT_PASSWORD = "password".toCharArray()
 
 @RunWith(AndroidJUnit4::class)
 class HiddenSlothImplTest {
@@ -121,7 +121,7 @@ class HiddenSlothImplTest {
 
         instance.init(storage, DEFAULT_HANDLE)
         instance.encrypt(storage, DEFAULT_PASSWORD, data)
-        instance.decrypt(storage, "wrong passphrase")
+        instance.decrypt(storage, "wrong passphrase".toCharArray())
     }
 
     @Test(expected = AEADBadTagException::class)

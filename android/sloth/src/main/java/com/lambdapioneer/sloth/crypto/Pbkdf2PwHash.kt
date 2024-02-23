@@ -15,12 +15,12 @@ class Pbkdf2PwHash(
 
     override fun deriveHash(
         salt: ByteArray,
-        password: String,
+        password: CharArray,
         outputLengthInBytes: Int,
     ): ByteArray {
         val factory = SecretKeyFactory.getInstance(params.algorithm)
         val keySpec = PBEKeySpec(
-            /* password = */ password.toCharArray(),
+            /* password = */ password,
             /* salt = */ salt,
             /* iterationCount = */ params.iterationCount,
             /* keyLength = */ 8 * outputLengthInBytes

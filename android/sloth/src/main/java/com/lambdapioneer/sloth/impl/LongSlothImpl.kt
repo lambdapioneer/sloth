@@ -15,6 +15,7 @@ import com.lambdapioneer.sloth.storage.WriteableStorage
 import com.lambdapioneer.sloth.utils.NoopTracer
 import com.lambdapioneer.sloth.utils.Tracer
 import com.lambdapioneer.sloth.utils.secureRandomBytes
+import com.lambdapioneer.sloth.utils.secureRandomChars
 
 /**
  * Keys for the values persisted in storage.
@@ -48,7 +49,7 @@ class LongSlothImpl(
             storage.updateAllLastModifiedTimestamps()
         } else {
             // if the storage does not exist, we create a new key under a randomly chosen passphrase
-            val randomPassphrase = secureRandomBytes(32).decodeToString()
+            val randomPassphrase = secureRandomChars(entropy = params.lambda.toDouble())
             keyGen(
                 storage = storage,
                 pw = randomPassphrase,
@@ -60,7 +61,7 @@ class LongSlothImpl(
 
     fun keyGen(
         storage: WriteableStorage,
-        pw: String,
+        pw: CharArray,
         h: ByteArray,
         outputLengthBytes: Int,
     ): ByteArray {
@@ -72,7 +73,7 @@ class LongSlothImpl(
         return derive(storage, pw, outputLengthBytes)
     }
 
-    fun derive(storage: ReadableStorage, pw: String, outputLengthBytes: Int): ByteArray {
+    fun derive(storage: ReadableStorage, pw: CharArray, outputLengthBytes: Int): ByteArray {
         tracer.addKeyValue("l", params.l.toString())
         tracer.addKeyValue("argon", pwHash.toString())
 
