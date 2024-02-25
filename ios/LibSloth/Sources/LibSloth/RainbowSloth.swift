@@ -46,7 +46,7 @@ public struct RainbowSloth {
         return k
     }
 
-    /// An evaluation method of the internal derive method to measure the effective time guarantees. The returned array contains
+    /// An evaluation method of the internal `innerDerive` method to measure the effective time guarantees. The returned array contains
     /// `iterations` many measurements of this operation in seconds.
     func eval(storageState: RainbowSlothStorageState, pw: String, outputLength: Int, iterations: Int) throws -> [Double] {
         let pres = try preambleDerive(storageState: storageState, pw: pw)

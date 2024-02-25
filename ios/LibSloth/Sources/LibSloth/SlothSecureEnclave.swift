@@ -3,6 +3,10 @@ import Foundation
 
 enum SlothSecureEnclave {
 
+    //
+    // ECDH related methods used by RainbowSloth
+    //
+
     /// Performs a Diffie-Hellmann with the `secretKey` stored inside the Secure Enclave and the
     /// provided `pubKey` stored in regular memory.
     static func runECDH(secretKey: SecKey, pubKey: SecKey) throws -> Bytes {
@@ -76,7 +80,7 @@ enum SlothSecureEnclave {
         let query = getQueryForSecretSeKey(handle: handle)
         _ = SecItemDelete(query as CFDictionary) // ignore if we fail to
 
-        // (2) setup propertoes of new key
+        // (2) setup properties of new key
         guard let accessControl = SecAccessControlCreateWithFlags(
             kCFAllocatorDefault,
             kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
@@ -102,6 +106,46 @@ enum SlothSecureEnclave {
             throw SlothError.failedToGenerateSecretKey
         }
     }
+
+    //
+    // AES-GCM related methods used by HiddenSloth
+    //
+
+    static func aesGcmEncrypt(handle: String, data: Bytes) throws -> Bytes {
+        let secKey = try SlothSecureEnclave.loadSecretSeKey(handle: handle)
+
+        guard let publicKey = SecKeyCopyPublicKey(secKey) else {
+            throw SlothError.failedToGetAssociatedPublicKey
+        }
+
+        var cfError: Unmanaged<CFError>?
+        let result = SecKeyCreateEncryptedData(publicKey, .eciesEncryptionCofactorVariableIVX963SHA256AESGCM, Data(data) as CFData, &cfError) as Data?
+        guard result != nil else {
+            throw SlothError.failedToEncryptAuthenticated
+        }
+
+        return result!.withUnsafeBytes { body in
+            Bytes(body)
+        }
+    }
+
+    static func aesGcmDecrypt(handle: String, ciphertext: Bytes) throws -> Bytes {
+        let secKey = try SlothSecureEnclave.loadSecretSeKey(handle: handle)
+
+        var cfError: Unmanaged<CFError>?
+        let result = SecKeyCreateDecryptedData(secKey, .eciesEncryptionCofactorVariableIVX963SHA256AESGCM, Data(ciphertext) as CFData, &cfError) as Data?
+        guard result != nil else {
+            throw SlothError.failedToDecryptAuthenticatedCiphertext
+        }
+
+        return result!.withUnsafeBytes { body in
+            Bytes(body)
+        }
+    }
+
+    //
+    // General helper methods
+    //
 
     private static func getQueryForSecretSeKey(handle: String) -> NSDictionary {
         return [

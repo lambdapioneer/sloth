@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		295AAC9F2B87AA7300B0D95D /* RainbowSlothTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295AAC9E2B87AA7300B0D95D /* RainbowSlothTests.swift */; };
+		297E02452B8B8F9800F9F8AA /* HiddenSlothTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297E02442B8B8F9800F9F8AA /* HiddenSlothTests.swift */; };
 		29AAF9C12B0B55A800E12423 /* SlothApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AAF9C02B0B55A800E12423 /* SlothApp.swift */; };
 		29AAF9C32B0B55A800E12423 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AAF9C22B0B55A800E12423 /* ContentView.swift */; };
 		29AAF9C52B0B55A900E12423 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 29AAF9C42B0B55A900E12423 /* Assets.xcassets */; };
@@ -30,6 +31,8 @@
 
 /* Begin PBXFileReference section */
 		295AAC9E2B87AA7300B0D95D /* RainbowSlothTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowSlothTests.swift; sourceTree = "<group>"; };
+		297E02442B8B8F9800F9F8AA /* HiddenSlothTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenSlothTests.swift; sourceTree = "<group>"; };
+		297E02462B8CD9FF00F9F8AA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		29AAF9BD2B0B55A800E12423 /* Sloth.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sloth.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		29AAF9C02B0B55A800E12423 /* SlothApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlothApp.swift; sourceTree = "<group>"; };
 		29AAF9C22B0B55A800E12423 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -83,6 +86,7 @@
 		29AAF9BF2B0B55A800E12423 /* Sloth */ = {
 			isa = PBXGroup;
 			children = (
+				297E02462B8CD9FF00F9F8AA /* Info.plist */,
 				29AAF9EA2B0B55F300E12423 /* LibSloth */,
 				29AAF9C02B0B55A800E12423 /* SlothApp.swift */,
 				29AAF9C22B0B55A800E12423 /* ContentView.swift */,
@@ -105,6 +109,7 @@
 			isa = PBXGroup;
 			children = (
 				295AAC9E2B87AA7300B0D95D /* RainbowSlothTests.swift */,
+				297E02442B8B8F9800F9F8AA /* HiddenSlothTests.swift */,
 				29AAF9EF2B0B5FF700E12423 /* SecureEnclaveTests.swift */,
 			);
 			path = SlothTests;
@@ -233,6 +238,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				297E02452B8B8F9800F9F8AA /* HiddenSlothTests.swift in Sources */,
 				295AAC9F2B87AA7300B0D95D /* RainbowSlothTests.swift in Sources */,
 				29AAF9F02B0B5FF700E12423 /* SecureEnclaveTests.swift in Sources */,
 			);
@@ -373,11 +379,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Sloth/Preview Content\"";
+				DEVELOPMENT_TEAM = 48XKGWFXVN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sloth/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -391,6 +400,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lambdapioneer.Sloth;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -402,11 +412,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Sloth/Preview Content\"";
+				DEVELOPMENT_TEAM = 48XKGWFXVN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sloth/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -420,6 +433,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lambdapioneer.Sloth;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -433,6 +447,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 48XKGWFXVN;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
@@ -452,6 +467,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 48XKGWFXVN;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;

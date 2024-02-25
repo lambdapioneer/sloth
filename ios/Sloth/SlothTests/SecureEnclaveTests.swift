@@ -29,6 +29,42 @@ final class SlothSecureEnclaveTests: XCTestCase {
         XCTAssertNotEqual(a1, c1)
     }
 
+    func testAesGcmEncryptDecryptHappyPath() throws {
+        let message = Bytes("message".utf8)
+
+        // encrypt and decrypt using the same key handle should result in the same text
+        let ciphertext = try SlothSecureEnclave.aesGcmEncrypt(handle: "test", data: message)
+        let actual = try SlothSecureEnclave.aesGcmDecrypt(handle: "test", ciphertext: ciphertext)
+        XCTAssertEqual(message, actual)
+    }
+
+    func testAesGcmEncryptDecryptFailsIfCiphertextChanged() throws {
+        let message = Bytes("message".utf8)
+
+        var ciphertext = try SlothSecureEnclave.aesGcmEncrypt(handle: "test", data: message)
+
+        // decrypting of a modified ciphertext should fail
+        ciphertext[0] ^= 0x01
+
+        XCTAssertThrowsError(try SlothSecureEnclave.aesGcmDecrypt(handle: "test", ciphertext: ciphertext)) { (error) in
+            XCTAssertEqual(error as? SlothError, SlothError.failedToDecryptAuthenticatedCiphertext)
+        }
+    }
+
+    func testAesGcmEncryptDecryptFailsIfSecretKeyReset() throws {
+        let message = Bytes("message".utf8)
+
+        let ciphertext = try SlothSecureEnclave.aesGcmEncrypt(handle: "test", data: message)
+
+        try SlothSecureEnclave.resetSecretSeKey(handle: "test")
+        _ = try SlothSecureEnclave.aesGcmEncrypt(handle: "test", data: message)
+
+        // as a result the previous ciphertext should no longer decrypt
+        XCTAssertThrowsError(try SlothSecureEnclave.aesGcmDecrypt(handle: "test", ciphertext: ciphertext)) { (error) in
+            XCTAssertEqual(error as? SlothError, SlothError.failedToDecryptAuthenticatedCiphertext)
+        }
+    }
+
     func testExportAndImportPublicKey() throws {
         for _ in 0..<10 {
             let pubKey = try SlothSecureEnclave.generateRandomPublicKey()
