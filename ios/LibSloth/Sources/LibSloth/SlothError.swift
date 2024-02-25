@@ -29,6 +29,9 @@ enum SlothError: Error {
     /// CryptoKit failed to import a public key
     case failedToImportPublicKey
 
+    /// CryptoKit failed to retrieve the public key associated with a secret key
+    case failedToGetAssociatedPublicKey
+
     //
     // Errors related to LibSodium
     //
@@ -44,6 +47,18 @@ enum SlothError: Error {
 
     /// A call to encode a byte array into a hex string using LibSodium failed
     case failedToEncodeHexString
+
+    //
+    // General cryptographic errors (both CryptoKit and LibSodium)
+    //
+
+    /// A call to decrypt an authenticated ciphertext failed. This might mean that the ciphertext was
+    /// modified or a wrong key/password was provided.
+    case failedToDecryptAuthenticatedCiphertext
+
+    /// A call to encrypt data failed. This typically points to an internal error such as provinding the wrong
+    /// key or IV length.
+    case failedToEncryptAuthenticated
 
     //
     // Errors related to the RainbowSloth algorithms and utils

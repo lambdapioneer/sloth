@@ -1,24 +1,29 @@
 import LibSloth
 import SwiftUI
 
-func runExperiment(experiment: String, n: Int, iterations: Int) throws -> [Double] {
+func runExperiment(experiment: String, n: Int, maxSize: Int, iterations: Int) throws -> [Double] {
     switch experiment {
     case "seop":
         return try SecureEnclaveEvaluationWrapper.runEval(iterations: iterations)
-    case "sloth":
+    case "rainbow":
         let sloth = RainbowSloth(withN: n)
         return try RainbowSlothEvaluationWrapper.runEval(sloth: sloth, iterations: iterations)
+    case "hidden":
+        // Note that for the ratcheting step, the parameter `n` for the derivation function has no effect
+        let sloth = HiddenSloth(withRainbowSloth: RainbowSloth(withN: 10), maxSize: maxSize)
+        return try HiddenSlothEvaluationWrapper.runEval(sloth: sloth, iterations: iterations)
     default:
         assert(false)
         return [Double]()
     }
 }
 
-func backgroundWork(experiment: String, n: Int, iterations: Int) throws -> String {
+func backgroundWork(experiment: String, n: Int, maxSize: Int, iterations: Int) throws -> String {
     // run
     let executionTimes = try runExperiment(
         experiment: experiment,
         n: n,
+        maxSize: maxSize,
         iterations: iterations
     )
 
@@ -28,6 +33,7 @@ func backgroundWork(experiment: String, n: Int, iterations: Int) throws -> Strin
         "version": UIDevice.current.systemVersion,
         "experiment": experiment,
         "n": n,
+        "maxSize": maxSize,
         "iterations": iterations,
         "executionTimeSeconds": executionTimes
     ]
@@ -57,9 +63,10 @@ func backgroundWork(experiment: String, n: Int, iterations: Int) throws -> Strin
 }
 
 struct ContentView: View {
-    @State var taskSelection = "sloth"
+    @State var taskSelection = "rainbow"
     @State var iterations = 10
     @State var n = 10
+    @State var maxSize = 1_000_000
     @State var isRunning = false
     @State var taskOutput = "ready"
 
@@ -72,7 +79,8 @@ struct ContentView: View {
             Text("Experiment to run:").font(.headline)
             Picker("Experiment", selection: $taskSelection, content: {
                 Text("SE-OP").tag("seop")
-                Text("RainbowSloth").tag("sloth")
+                Text("RainbowSloth.innerDerive").tag("rainbow")
+                Text("HiddenSloth.ratchet").tag("hidden")
             }).disabled(isRunning)
 
             Text("Rainbow parameter n:").font(.headline)
@@ -81,7 +89,16 @@ struct ContentView: View {
                 Text("10").tag(10)
                 Text("100").tag(100)
                 Text("1000").tag(1000)
-            }).disabled(isRunning || taskSelection != "sloth")
+            }).disabled(isRunning || taskSelection != "rainbow")
+
+            Text("HiddenSloth parameter maxSize:").font(.headline)
+            Picker("Rainbow parameter n", selection: $maxSize, content: {
+                Text("1 MiB").tag(1_000_000)
+                Text("3.16 MiB").tag(3_162_277)
+                Text("10 MiB").tag(10_000_000)
+                Text("31.62 MiB").tag(31_622_776)
+                Text("100 MiB").tag(100_000_000)
+            }).disabled(isRunning || taskSelection != "hidden")
 
             Text("Number of experiment iterations:").font(.headline)
             Picker("Number of experiment iterations", selection: $iterations, content: {
@@ -100,6 +117,7 @@ struct ContentView: View {
                         let output = try backgroundWork(
                             experiment: taskSelection,
                             n: Int(n),
+                            maxSize: Int(maxSize),
                             iterations: Int(iterations)
                         )
                         DispatchQueue.main.async {
