@@ -126,7 +126,7 @@ class HiddenSlothBenchTest {
         if (operationUnderTest == HiddenSlothOperationUnderTest.DECRYPT || operationUnderTest == HiddenSlothOperationUnderTest.DECRYPT_WITH_CACHED_KEY) {
             hiddenSloth.encrypt(
                 storage = storage,
-                pw = DEFAULT_PASSWORD,
+                pw = DEFAULT_PASSWORD.toCharArray(),
                 data = maxSizeEncryptionPayload,
                 tracer = NoopTracer(),
             )
@@ -137,7 +137,7 @@ class HiddenSlothBenchTest {
             if (operationUnderTest == HiddenSlothOperationUnderTest.DECRYPT_WITH_CACHED_KEY) {
                 hiddenSloth.computeCachedSecrets(
                     storage = storage,
-                    pw = DEFAULT_PASSWORD,
+                    pw = DEFAULT_PASSWORD.toCharArray(),
                 )
             } else {
                 null
@@ -160,7 +160,7 @@ class HiddenSlothBenchTest {
 
                 HiddenSlothOperationUnderTest.DECRYPT -> hiddenSloth.decrypt(
                     storage = storage,
-                    pw = DEFAULT_PASSWORD,
+                    pw = DEFAULT_PASSWORD.toCharArray(),
                     tracer = tracer
                 )
 
@@ -177,7 +177,7 @@ class HiddenSlothBenchTest {
 
                 HiddenSlothOperationUnderTest.ENCRYPT -> hiddenSloth.encrypt(
                     storage = storage,
-                    pw = DEFAULT_PASSWORD,
+                    pw = DEFAULT_PASSWORD.toCharArray(),
                     data = maxSizeEncryptionPayload,
                     tracer = tracer
                 )

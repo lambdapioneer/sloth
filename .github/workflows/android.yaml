@@ -30,9 +30,9 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get install -y tree
 
-      - name: Build app (debug) with Gradle
+      - name: Build all targets (debug) with Gradle
         working-directory: android
-        run: ./gradlew :app:assembleDebug
+        run: ./gradlew assembleDebug assembleAndroidTest
 
       - name: Build lib release and publish locally
         working-directory: android

@@ -73,7 +73,7 @@ class LongSlothBenchTest {
         )
         keyGenInstance.keyGen(
             storage = storage,
-            pw = defaultPassword,
+            pw = defaultPassword.toCharArray(),
             h = defaultKeyHandle,
             outputLengthBytes = defaultOutputKeyLength
         )
@@ -91,7 +91,7 @@ class LongSlothBenchTest {
             )
             deriveInstance.derive(
                 storage = storage,
-                pw = defaultPassword,
+                pw = defaultPassword.toCharArray(),
                 outputLengthBytes = defaultOutputKeyLength
             )
         }
