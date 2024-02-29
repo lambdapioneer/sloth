@@ -6,7 +6,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class UtilsTest {
+class ByteArrayExtensionsTest {
 
     @Test
     fun testHexEncodeDecode_whenEmpty_thenEmpty() {
