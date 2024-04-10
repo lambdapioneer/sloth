@@ -6,6 +6,7 @@ import androidx.annotation.VisibleForTesting
 import com.lambdapioneer.sloth.SlothInconsistentState
 import com.lambdapioneer.sloth.SlothStorageKeyNotFound
 import com.lambdapioneer.sloth.crypto.Hkdf
+import com.lambdapioneer.sloth.crypto.HmacAlgorithm
 import com.lambdapioneer.sloth.crypto.PwHash
 import com.lambdapioneer.sloth.impl.LongSlothKeys.*
 import com.lambdapioneer.sloth.secureelement.KeyHandle
@@ -41,7 +42,7 @@ class LongSlothImpl(
     private val pwHash: PwHash,
     private val tracer: Tracer = NoopTracer(),
 ) {
-    private val hkdf = Hkdf()
+    private val hkdf = Hkdf(HmacAlgorithm.SHA256)
 
     fun onAppStart(storage: WriteableStorage, h: ByteArray) {
         if (exists(storage)) {
