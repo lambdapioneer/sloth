@@ -19,12 +19,12 @@ logger = logging.getLogger('main')
 
 # get with `aws devicefarm list-projects` (make sure to set region to us-west-2,
 # as it is the only one with device farm)
-PROJECT_ARN = 'CHANGE_ME'
+PROJECT_ARN = 'arn:aws:devicefarm:us-west-2:344656001885:project:d9e2bbda-80f4-4e37-ad4e-02093a2015f5'
 
 # get with `aws devicefarm list-device-pools --arn $PROJECT_ARN`
 DEVICE_POOL_ALIASES = {
-    'single': 'CHANGE_ME',
-    'small': 'CHANGE_ME',
+    'single': 'arn:aws:devicefarm:us-west-2:344656001885:devicepool:d9e2bbda-80f4-4e37-ad4e-02093a2015f5/158f3c21-ec58-4882-8c4d-3dd0e5c23ae7',
+    'small': 'arn:aws:devicefarm:us-west-2:344656001885:devicepool:d9e2bbda-80f4-4e37-ad4e-02093a2015f5/55f8b986-be9b-471d-8ca7-1340b6a3677e',
 }
 
 ANDROID_PROJECT_PATH = '.'

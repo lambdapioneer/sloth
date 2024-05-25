@@ -87,7 +87,7 @@ class LongSlothBenchTest {
                 params = LongSlothParams(l = parameterL),
                 secureElement = secureElement,
                 pwHash = LibSodiumArgon2PwHash(pwHashParams),
-                tracer = NoopTracer(),
+                tracer = tracer,
             )
             deriveInstance.derive(
                 storage = storage,

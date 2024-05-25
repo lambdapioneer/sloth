@@ -29,7 +29,6 @@ During these runs we manually interacted with the app through the web interface 
 The app reports the results to a custom server that we run on one of our servers.
 The server and how to run it is described inside the [`server` folder](server/).
 
-To replicate these steps first start the server on a server and update the IP address in the [`ContentView.swift`](SecureEnclaveBench/SecureEnclaveBench/ContentView.swift) file.
-Build the artifacts by running `build_artifact.sh`.
+To replicate these steps first start the server on a server and update the IP address in the [`ContentView.swift`](Sloth/Sloth/ContentView.swift) file.
 Start the simulator (or use real devices) and install the IPA file.
 Execute the scenarios under test using the UI and observe that results are collected on the server as log files.

@@ -43,7 +43,7 @@ func backgroundWork(experiment: String, n: Int, maxSize: Int, iterations: Int) t
     //
     // --> CHANGE ME <--
     //
-    let url = URL(string: "http://127.0.0.1:8080/ios-report")!
+    let url = URL(string: "http://127.0.0.1:5000/ios-report")!
 
     // upload
     var request = URLRequest(url: url)
