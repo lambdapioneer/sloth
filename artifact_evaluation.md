@@ -6,9 +6,8 @@ Artifacts HotCRP ID: **TBD when uploading**
 
 Requested Badge: **Reproducible**
 
-Note 1: This file is also included in the submitted repository as reference for future users.
+Note: This file is also included in the submitted repository as reference for future users. We suggest that the artifact is assigned to reviewers who are already familiar with Android/iOS development.
 
-Note 2: We can provide our raw measurements if requested, but we do not include them in the repository to keep the size small.
 
 ## Description
 
@@ -299,6 +298,9 @@ However, the numbers should be very similar for all practical concerns.
 
 ### Main Results and Claims
 
+We will reproduce all main results from the paper by recreating all plots.
+Since the device survey (Table 4 in the Appendix) is very costly to create (requires many AWS Device Farm minutes), we do not include it here.
+In addition, both the Android and iOS projects come with extensive unit and integration tests that can be executed locally to convince oneself of the correctness of the implementation.
 
 #### Main Result 1: Duration of HMAC Operations on 🤖 Android
 
@@ -322,7 +324,7 @@ Importantly, we show that we can parameterize it so that it meet a minimum time 
 
 #### Main Result 5: Duration of the HiddenSloth Operations on 🤖 Android
 
-We reproduce the results from **Figure 6 (top)** which shows the duration of the HiddenSloth operations on Android for different devices.
+We reproduce the results from **Figure 6 (top)** and **Figure 7** which shows the duration of the HiddenSloth operations on Android for different devices.
 
 #### Main Result 6: Duration of the HiddenSloth Operations on 🍏 iOS
 
@@ -334,6 +336,8 @@ We reproduce the results from **Figure 6 (bottom)** which shows the duration of 
 The experiments are grouped based on the platforms and each covers multiple main results.
 
 #### Experiment 1: 🤖 Android
+
+We will run the experiments in an automated manner using our AWS Device Farm script and then analyze the data using the Jupyter notebooks.
 
 1. Run the full benchmark suite using our "small" device pool.
 ```bash
@@ -356,11 +360,55 @@ $ source env/bin/activate
 
 5. Open `01-analysis-android-op-perf.ipynb` and update the `RESULTS_DIR` variable in the second cell. Then run the entire notebook. This reproduces **Main Result 1: Duration of HMAC Operations on 🤖 Android**.
 
+6. Open `03-analysis-android-long-sloth.ipynb` and update the `RESULTS_DIR` variable in the second cell. Then run the entire notebook. This reproduces **Main Result 3: Duration of the LongSloth.Derive Operations on 🤖 Android**. Note: the similarly named file `03-analysis-android-and-ios-sloth-perf` includes also the iOS code to create a combined plot.
+
+7. Open `04-analysis-android-hidden-sloth.ipynb` and update the `RESULTS_DIR` variable in the second cell. Then run the entire notebook. This reproduces **Main Result 5: Duration of the HiddenSloth Operations on 🤖 Android**.
+
+8. All done! 🎉
 
 
 #### Experiment 2: 🍏 iOS
-...
 
+We will run the experiments using remote iOS devices on AWS Device Farm and manually executing them via the app. The results will be uploaded to our web service from which we then download them to analyze them using the Jupyter notebooks.
+
+1. Ensure the web service is running as per the setup instructions above.
+
+2. Prepare a _signed_ IPA archive in XCode to use with the AWS Device Farm. The resulting file should end in `.ipa` and contain a `Payload` directory which then contains a folder named `Sloth.app`. If this is not the case, check the build settings in XCode or manually unzip/rezip as needed to match the structure.
+
+3. Create a new "Remote Session" within our `aec-sloth` project using the AWS web console. Select the iPhone device you want to use (see paper for the models we used). Then confirm and start.
+
+⚠️ **Heads up:** make sure to end the session as soon as possible when done, as otherwise AWS will continue to charge!
+
+4. Drag and drop the IPA file into the AWS Device Farm web console. This installs the IPA file and you can control it using the web interface.
+
+If you get stuck, the [FAQ section](https://docs.aws.amazon.com/devicefarm/latest/developerguide/troubleshooting-ios-applications.html) contains helpful details for debugging the iOS layout.
+
+5. Run the following tests with `iterations=10` using the UI controls:
+  - Experiment: "SE-OP"
+  - Experiment: "RainbowSloth.innerDerive" once for each Rainbow parameter available
+  - Experiment: "HiddenSloth.ratchet" once for each maxSize parameter available
+
+6. After each test completes, you should see respective log messages at the web service indicating that data has been uploaded.
+
+7. **Repeat:** the steps 3-6 for each device you want to test.
+
+8. Download the results from the web service to your local machine. Store them in the `results` folder under a name of your choosing, e.g. `/results/ios-2023-03-19`.
+
+9. Open the Jupyter notebooks.
+```bash
+(env) $ deactivate
+$ cd ../evaluation
+$ source env/bin/activate
+(env) $ jupyter notebook
+```
+
+10. Open `01-analysis-ios-op-perf.ipynb` and update the `RESULTS_DIR` variable in the second cell. Then run the entire notebook. This reproduces **Main Result 2: Duration of ECDH Operations on 🍏 iOS**.
+
+11. Open `03-analysis-ios-rainbow-sloth` and update the `RESULTS_DIR` variable in the second cell. Then run the entire notebook. This reproduces **Main Result 4: Duration of the LongSloth.Derive Operations on 🍏 iOS**.
+
+12. Open `04-analysis-ios-hidden-sloth.ipynb` and update the `RESULTS_DIR` variable in the second cell. Then run the entire notebook. This reproduces **Main Result 6: Duration of the HiddenSloth Operations on 🤖 iOS**.
+
+13. All done! 🎉
 
 ## Limitations
 

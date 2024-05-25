@@ -171,7 +171,8 @@ class HiddenSlothBenchTest {
                         pw = null,
                         tracer = tracer,
                         cachedSecrets = cachedSecrets!!,
-                        decryptionOffsetAndLength = OffsetAndLength(0, length)
+                        decryptionOffsetAndLength = OffsetAndLength(0, length),
+                        onlyTraceInnerDecryption = true,
                     )
                 }
 

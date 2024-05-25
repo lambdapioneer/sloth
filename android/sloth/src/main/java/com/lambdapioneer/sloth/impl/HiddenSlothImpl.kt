@@ -226,12 +226,13 @@ class HiddenSlothImpl(
         tracer: Tracer = NoopTracer(),
         cachedSecrets: HiddenSlothCachedSecrets? = null,
         decryptionOffsetAndLength: OffsetAndLength? = null,
+        onlyTraceInnerDecryption: Boolean = false,
     ): ByteArray {
         val hasPassword = pw != null
         val hasCachedSecrets = cachedSecrets != null
         require(hasPassword xor hasCachedSecrets) { "Either pw or cachedSecrets must be provided" }
 
-        tracer.start()
+        if (!onlyTraceInnerDecryption) tracer.start()
         try {
             val hDems = KeyHandle(storage.get(OUTER_H.key))
             val seIv = storage.get(OUTER_IV.key)
@@ -254,6 +255,11 @@ class HiddenSlothImpl(
                 iv = seIv,
                 data = storage.get(TIV.key)
             )
+
+            // When working with cached keys, then all of the above can be cached. For
+            // robustness reasons we do not do so in our production version. However, in our
+            // evaluation we are still interested in what we can achieve (if we decide to).
+            if (onlyTraceInnerDecryption) tracer.start()
 
             //
             // (2) Decrypt the outer ciphertext using the `tk` and `tiv` secrets
