@@ -1,5 +1,8 @@
 # 🦥 Sloth: Key Stretching and Deniable Encryption using Secure Elements on Smartphones
 
+> [!NOTE] 
+> For the **artifact evaluation** walk-through see the [artifact-evaluation.md](artifact-evaluation.md) file.
+
 This repository contains the code and analysis scripts for the [Sloth paper](https://eprint.iacr.org/2023/1792.pdf) (pre-print).
 Sloth describes a set of cryptographic protocols that leverage the Secure Element (SE) of smartphones for key stretching and deniable encryption.
 
