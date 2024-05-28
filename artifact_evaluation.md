@@ -2,38 +2,43 @@
 
 Paper title: **Sloth: Key Stretching and Deniable Encryption using Secure Elements on Smartphones**
 
-Artifacts HotCRP ID: **TBD when uploading**
-
 Requested Badge: **Reproducible**
 
-Note: This file is also included in the submitted repository as reference for future users. We suggest that the artifact is assigned to reviewers who are already familiar with Android/iOS development.
+Artifacts HotCRP ID: https://artifact.petsymposium.org/artifact2024.4/paper.php/7
+
+Artifact URL: https://github.com/lambdapioneer/sloth/tree/aec
+
+Note: This file is also included in the submitted repository as reference for future users. We suggest that the artifact is assigned to reviewers who are familiar with Android/iOS development.
 
 
 ## Description
 
-Our paper introduces a family of protocols that we have implemented on Android and iOS.
-This repository contains libraries for the respective platforms that can be used by other developers.
-In addition, we provide scripts for testing and evaluation purposes.
-On Android, you can use our script to run the evaluation on many devices in parallel using AWS Device Farm.
+Our paper introduces a family of protocols for key stretching and plausibly deniable storage that we have implemented on Android and iOS.
+This repository contains libraries for the respective platforms that can be easily integrated by other developers.
+In addition, we provide scripts that we used for testing and evaluation purposes.
+For example, on Android, you can use our scripts to run the full evaluation automatically on many real devices in parallel using AWS Device Farm.
 
-We suggest that the artifact evaluation focuses on the Android artifacts and evaluation scripts, as those do not require any specialized equipment.
+We suggest that the artifact evaluation focuses on the Android artifacts and evaluation scripts, as those do not require any specialized equipment and developer accounts.
+Nevertheless, we also describe how to run the iOS evaluation using either a local device or a remote session on AWS Device Farm.
 
 Good luck!
 
 
 ### Security/Privacy Issues and Ethical Concerns
 
-Running experiments using AWS Device Farm results in costs. 
+⚠️ **Important:** Running experiments using AWS Device Farm results in costs. 
 Please ensure you are familiar with the [AWS Device Farm pricing](https://aws.amazon.com/device-farm/pricing/) before continuing.
 The total costs for the proposed experiments should not exceed $100 and every new AWS account comes with free minutes.
+Those free minutes should be sufficient to run all described experiments.
 
-Testing the iPhone artifacts might require an Apple Developer account which incur a yearly subscription fee.
+Testing the iPhone artifacts might require an Apple Developer account which incurs a yearly subscription fee.
+This is required to sign the app in order to run it on physical devices (such as those available on AWS Device Farm).
 
 
 ## Basic Requirements
 
-For the 🤖 Android artifacts, the review requires access to:
-- A local computer running Ubuntu 24.04 (or similar). MacOS is might also work, but is not tested.
+For the 🤖 Android artifacts, the reviewer requires access to:
+- A local computer running Ubuntu 24.04 (or similar). MacOS might also work, but is not tested.
 - Android Studio and Python 3
 - Either:
   - An AWS account with access to Device Farm (recommended)
@@ -41,9 +46,9 @@ For the 🤖 Android artifacts, the review requires access to:
 
 For the 🍏 iOS artifacts, the reviewer requires access to:
 - An up-to-date Mac machine with XCode installed.
-- An Apple Developer account
+- An Apple Developer account (required for AWS Device Farm)
 - And either:
-  - A recent iPhone device (recommended)
+  - A local iPhone device (recommended)
   - An AWS account with access to Device Farm _and_ an Apple Developer account. 
 - For collecting the results a publicly reachable server is required.
 
@@ -58,11 +63,11 @@ For Android only a general-purpose computer with Linux is required.
 MacOS is might also work, but is not tested.
 A physical Android device with a SE can be helpful--Table 4 in the Appendix lists common devices and their compatibility.
 For the evaluation, we recommend to use AWS Device Farm instead which provides remote access to physical devices managed by AWS.
-In particular, you will have access to the same models we used for our evaluation.
+In particular, you will have access to the same exact models we used for our evaluation.
 
 For iOS a Mac machine that can run a recent XCode version is required.
 The artifacts can then tested using a physical iPhone device or AWS Device Farm.
-Note that for the later the app needs to be signed with requires an Apple Developer account subscription.
+Note that for the latter the app needs to be signed with requires an Apple Developer account subscription.
 
 As the iOS benchmarks requires uploading the evaluation results to a simple Linux web service, you will need access to a simple publicly-reachable server. A simple DigitalOcean droplet or similar is sufficient.
 
@@ -70,15 +75,15 @@ As the iOS benchmarks requires uploading the evaluation results to a simple Linu
 ### Software Requirements
 
 For 🤖 Android:
-- Ubuntu 24.04 (or similar)
-- Android Studio
-- AWS CLI
+- Ubuntu (test with 24.04)
+- Android Studio (tested with 2023.3.1)
+- AWS CLI (tested with 2.15.58)
 - Python 3
 - OpenJDK 17
 
 For 🍏 iOS:
-- MacOS
-- XCode
+- MacOS (most recent)
+- XCode (most recent)
 - Python 3
 
 We discuss how to set up the environment in the next section. So, for now do not download or install anything yet.
@@ -87,6 +92,7 @@ We discuss how to set up the environment in the next section. So, for now do not
 ### Estimated Time and Storage Consumption
 
 The overall evaluation should require about 4 hours of interactive work and about 1 hour waiting for results.
+Most time will be spent setting up the environment and might be higher if you are not familiar with Android or iOS development.
 The overall disk space requirements are less than 50 GiB.
 
 
@@ -97,7 +103,7 @@ The overall disk space requirements are less than 50 GiB.
 The repository is available here: https://github.com/lambdapioneer/sloth/tree/aec
 
 Since the repository is actively used by other projects already, we use the **branch `aec`** during artifact evaluation.
-We will merge it together will all updates that resulted from reviewer feedback when the artifact evaluation concludes.
+We will merge that branch into `main` with all updates that resulted from reviewer feedback when the artifact evaluation concludes.
 
 
 ### Set up the environment
@@ -121,7 +127,7 @@ $ git checkout aec
 
 3. Open the project in Android Studio and build the project. In particular, you should be able to install and run the app on an emulator or physical device. However, on the emulator the SE will not be available and therefore the app will show an error when trying to use it.
 
-4. Also check that you can build the project from the command line. This is important for the automated testing with AWS Device Farm later. If it is complaining about a missing JDK (or you run into problems), then install OpenJDK 17.
+4. Also check that you can build the project from the command line. This is important for the automated testing with AWS Device Farm later. If it is complaining about a missing JDK (or you run into any other problems), ensure that you have installed OpenJDK 17.
 ```bash
 # Optionally: ensure only OpenJDK 17 is installed
 $ sudo apt remove openjdk*
@@ -218,7 +224,13 @@ $ git checkout aec
 
 2. Install XCode from the App Store.
 
-3. Open the project in XCode and build the project. In particular, you should be able to start and interact with the app on the simulator. The iOS simulator emulates the SE, so you can test all features without a physical device.
+3. Open the project in XCode and build the project. In particular, you should be able to start and interact with the app on the simulator. The iOS simulator emulates the SE, so you can test all features without a physical device. However, the performance numbers will be different.
+
+4. If you have an Apple developer account, sign into it using the preferences and update the project configuration to use you "team" for signing the app.
+
+5. If you are using a local iPhone for testing, [enable developer mode on the device](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device) and connect it to your Mac. Then select the device as the target in XCode and run the app.
+
+**Note:** you will need to be signed in with the same Apple ID in both XCode and your iPhone.
 
 
 #### AWS Device Farm (for 🍏 iOS)
@@ -232,7 +244,7 @@ That is all for now and we will create on-demand interactive sessions later duri
 
 #### Web service (for 🍏 iOS)
 
-1. Create a new DigitalOcean droplet or similar. We recommend picking the smallest x86 instance available.
+1. Create a new DigitalOcean droplet or similar. We recommend picking the cheapest x86 instance available. For local testing, you can also use a local machine that is one the same network as the iPhone target.
 
 2. Clone the repository and checkout the `aec` branch:
 ```bash
@@ -253,13 +265,15 @@ $ source env/bin/activate
 
 4. Start the server:
 ```bash
+(env) $ mkdir data/
 (env) $ python3 -mflask --app main run
 ```
 
 5. Note the public **server IP**. You later use this IP address to upload the evaluation results from the interactive iOS benchmark app.
 
-6. Verify that the server is indeed reachable by opening a browser and navigating to `http://<server-ip>:5000/ios-report`. You should see an error page.
+6. Verify that the server is indeed reachable by opening a browser and navigating to `http://<server-ip>:5000/ios-report`. If simply accessing with your browsers, you should see an error page.
 
+⚠️ **Warning:** the provided server code is just a simple solution for evaluation and not suitable for production use. In particular, it is likely vulnerable to even simple attacks. We recommend to run it on a dedicated machine and to shut it down after the experiments finished.
 
 #### Python notebooks
 
@@ -290,15 +304,15 @@ So, there are no additional steps for this section.
 
 During the artifact evaluation we will reproduce the most important figures of the papers.
 In particular, we will show the following important claims:
-- The performance of the key stretching algorithms scales with its parameters
+- The performance of the key stretching algorithms LongSloth and RainbowSloth scales with its parameters
 - The performance of HiddenSloth is comparable to the numbers shown in the paper
 
 Note that the experiments that you will execute are run against a newer version of the library with slightly different performance characteristics.
-However, the numbers should be very similar for all practical concerns.
+However, the numbers should be comparable for all practical concerns.
 
 ### Main Results and Claims
 
-We will reproduce all main results from the paper by recreating all plots.
+We will reproduce all main results from the paper by recreating all plots shown in the evaluation section.
 Since the device survey (Table 4 in the Appendix) is very costly to create (requires many AWS Device Farm minutes), we do not include it here.
 In addition, both the Android and iOS projects come with extensive unit and integration tests that can be executed locally to convince oneself of the correctness of the implementation.
 
@@ -377,11 +391,11 @@ We will run the experiments using remote iOS devices on AWS Device Farm and manu
 
 3. Create a new "Remote Session" within our `aec-sloth` project using the AWS web console. Select the iPhone device you want to use (see paper for the models we used). Then confirm and start.
 
-⚠️ **Heads up:** make sure to end the session as soon as possible when done, as otherwise AWS will continue to charge!
+⚠️ **Important:** make sure to end the session as soon as possible when done, as otherwise AWS will continue to charge!
 
 4. Drag and drop the IPA file into the AWS Device Farm web console. This installs the IPA file and you can control it using the web interface.
 
-If you get stuck, the [FAQ section](https://docs.aws.amazon.com/devicefarm/latest/developerguide/troubleshooting-ios-applications.html) contains helpful details for debugging the iOS layout.
+If you get stuck, the [AWS Device Farm FAQ section](https://docs.aws.amazon.com/devicefarm/latest/developerguide/troubleshooting-ios-applications.html) contains helpful details for debugging the iOS layout.
 
 5. Run the following tests with `iterations=10` using the UI controls:
   - Experiment: "SE-OP"
