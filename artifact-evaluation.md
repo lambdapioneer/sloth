@@ -125,7 +125,7 @@ $ git checkout aec
 
 2. Download and install Android Studio from https://developer.android.com/studio
 
-3. Open the project in Android Studio and build the project. In particular, you should be able to install and run the app on an emulator or physical device. However, on the emulator the SE will not be available and therefore the app will show an error when trying to use it.
+3. Open the project in Android Studio and build the project. In particular, you should be able to install and run the app on an emulator or physical device. However, on the emulator the SE will not be available and therefore the app will show an error when trying to use it. In case Android Studio does not auto-detects the right run configuration, create one like shown in the screenshot shown belo.
 
 4. Also check that you can build the project from the command line. This is important for the automated testing with AWS Device Farm later. If it is complaining about a missing JDK (or you run into any other problems), ensure that you have installed OpenJDK 17.
 ```bash
@@ -133,10 +133,20 @@ $ git checkout aec
 $ sudo apt remove openjdk*
 $ sudo apt install openjdk-17-jdk
 
+# As part of the Android setup, you will need to specify the location of the SDK
+$ export ANDROID_HOME=/CHANGEME/path/to/your/android/sdk
+$ echo $ANDROID_HOME
+
 # Build the Android project via CLI
 $ cd android
 $ ./gradlew build
 ```
+
+5. _Optionally_: you can run the Instrumentation Tests locally by creating configurations as shown in the screenshot below. For actual tests you will need a physical device with a SE.
+
+| Configuration for app run | Configuration for instrumentation tests |
+| --- | --- |
+| ![Screenshot of run configuration for running the app](docs/screenshot_android_studio_configuration_run_app.png) | ![Screenshot of run configuration for running the instrumentation tests](docs/screenshot_android_studio_configuration_run_tests.png) |
 
 
 #### AWS Device Farm (for 🤖 Android)
