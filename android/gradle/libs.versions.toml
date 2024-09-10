@@ -4,7 +4,7 @@ minSdk = "26"
 minSdkApp = "28"
 
 activity-compose = "1.9.2"
-agp = "8.1.1"
+agp = "8.6.0"
 androidx-junit = "1.2.1"
 assertj-core = "3.24.2"
 compose-bom = "2024.09.00"
